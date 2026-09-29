@@ -1,0 +1,42 @@
+{
+  "website:language_versions": [
+    "The new site should let visitors switch between English and Spanish, with the same core pages available in both languages.",
+    "Please prepare a French version of the website alongside the English one so our Quebec customers can browse in their own language.",
+    "We serve clients in Arabic and English; the website needs both language experiences, including right-to-left presentation where appropriate."
+  ],
+  "website:booking_rules": [
+    "Visitors should be able to reserve a consultation online, but the calendar must block staff holidays and prevent overlapping appointments.",
+    "We need a booking flow for thirty-minute discovery calls that offers only weekday slots and sends people a confirmation after they choose one.",
+    "Let customers request an installation date from our available windows; weekends and dates already assigned to another job should not appear."
+  ],
+  "brand:brand_guidelines": [
+    "Along with the new identity, please hand over a practical guide showing logo clear space, approved colors, type choices, and examples of correct use.",
+    "Our team needs a brand manual they can give to future designers so every campaign follows the same visual rules.",
+    "Include a concise style guide for the refreshed brand, covering marks, color values, fonts, and what to avoid when applying them."
+  ],
+  "seo:business_locations": [
+    "Local search should cover all three clinics in Brighton, Hove, and Lewes, with the correct address and service details for each.",
+    "We operate from two showrooms, one in Bristol and one in Bath; both locations need to be represented accurately in the SEO work.",
+    "Please make it easier for nearby customers to find our Manchester and Salford offices, treating each branch as its own local presence."
+  ],
+  "ads:retargeting_audience": [
+    "We want follow-up ads for people who viewed the pricing page but did not ask for a quote, excluding anyone who already became a customer.",
+    "Please bring shoppers back after they leave items in their cart, while keeping purchasers out of that audience.",
+    "The campaign should re-engage previous site visitors who explored our service pages without booking, rather than showing the same ads to everyone."
+  ],
+  "analytics:tracking_events": [
+    "We need to see distinct conversion events for brochure downloads, demo requests, and completed contact forms in the analytics setup.",
+    "Please measure when a visitor starts checkout, finishes a purchase, or abandons the payment step so we can see where orders drop off.",
+    "Track the key actions on the new site, especially appointment bookings and newsletter signups, as named events in our reporting."
+  ],
+  "email:email_segments": [
+    "Our mailing list should be split into new leads, active customers, and people who have not bought in a year so each group gets relevant messages.",
+    "Please set up separate email audiences for wholesale buyers and direct-to-consumer shoppers instead of sending the same campaign to both.",
+    "The welcome sequence needs to distinguish first-time subscribers from existing clients and tailor the copy to each group."
+  ],
+  "ecommerce:catalog_details": [
+    "The shop must hold each product's SKU, size and color options, photographs, price, and stock count, including separate variants for each size.",
+    "Please import the catalog with accurate descriptions, dimensions, shipping weights, and images so customers can compare the items properly.",
+    "Our inventory includes configurable products; the store needs variant-level codes, availability, and pricing rather than one generic entry per product."
+  ]
+}

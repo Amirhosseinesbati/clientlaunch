@@ -1,0 +1,228 @@
+{
+  "id": "CL08TrelloBoard1",
+  "name": "ClientLaunch | Provision Trello board",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## ClientLaunch | Provision Trello board\nClaimed board operation → DEMO simulator or connected Trello → board and To Do list IDs.\n\nInput/output contracts: manifest.json.",
+        "height": 170,
+        "width": 450
+      },
+      "id": "9e50dd7d-7a4f-5916-84cc-ac09cd1c4a0c",
+      "name": "Workflow contract",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        120,
+        20
+      ]
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "id": "f0dae536-45d4-5875-8cbf-7fa99d911fa4",
+      "name": "Accept board operation",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        120,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "af4f4f21-aba7-55a3-ae2a-0bed521e4e86",
+              "leftValue": "={{ $json.connector_mode === 'connected' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        }
+      },
+      "id": "0cebe02a-5eb7-5507-be83-54908c92d651",
+      "name": "Use connected Trello",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        360,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://api:8000/sim/trello/boards",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({onboarding_id:$json.onboarding_id,name:$json.request_payload.name,idempotency_key:$json.idempotency_key}) }}"
+      },
+      "id": "f82f017c-9d36-5dc7-aed3-3d4ae4597e7c",
+      "name": "Create demo board",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        620,
+        420
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'https://api.trello.com/1/boards?name=' + encodeURIComponent($json.request_payload.name) + '&defaultLists=true' }}",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "trelloApi"
+      },
+      "id": "2c4e6a3d-49a8-5a5d-99c8-08fa7bacbe69",
+      "name": "Create Trello board",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        620,
+        180
+      ],
+      "credentials": {
+        "trelloApi": {
+          "id": "__TRELLO_CREDENTIAL_ID__",
+          "name": "Trello API (configure)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ 'https://api.trello.com/1/boards/' + $('Create Trello board').first().json.id + '/lists?fields=id,name' }}",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "trelloApi"
+      },
+      "id": "76258f14-070d-5a76-a658-cb8e8071d2c0",
+      "name": "Read default Trello lists",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        870,
+        180
+      ],
+      "credentials": {
+        "trelloApi": {
+          "id": "__TRELLO_CREDENTIAL_ID__",
+          "name": "Trello API (configure)"
+        }
+      },
+      "settings": {
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 2000
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const board = $('Create Trello board').first().json;\nconst lists = $input.all().map(item => item.json);\nconst todo = lists.find(item => /^to do$/i.test(item.name)) ?? lists[0];\nif (!todo?.id) throw new Error('Board created but no Trello list was returned');\nreturn [{json:{id:board.id,url:board.url ?? board.shortUrl,name:board.name,todo_list_id:todo.id}}];"
+      },
+      "id": "322d8388-d763-5eed-bca0-f3265a93635f",
+      "name": "Select To Do list and board result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        180
+      ]
+    }
+  ],
+  "connections": {
+    "Accept board operation": {
+      "main": [
+        [
+          {
+            "node": "Use connected Trello",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Use connected Trello": {
+      "main": [
+        [
+          {
+            "node": "Create Trello board",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create demo board",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Trello board": {
+      "main": [
+        [
+          {
+            "node": "Read default Trello lists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read default Trello lists": {
+      "main": [
+        [
+          {
+            "node": "Select To Do list and board result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "executionTimeout": 300,
+    "errorWorkflow": "CL08ErrorRoute01"
+  },
+  "staticData": null,
+  "pinData": {},
+  "tags": []
+}

@@ -1,0 +1,655 @@
+{
+  "id": "CL08DispatchSweep",
+  "name": "ClientLaunch | Sweep pending dispatches",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## ClientLaunch | Sweep pending dispatches\nEvery five minutes, replay at most 20 pending approval, submission, or recovery triggers. Record each attempt so failed rows move behind untouched work. Acknowledge only a webhook 2xx.\n\nInput/output contracts: manifest.json.",
+        "height": 170,
+        "width": 450
+      },
+      "id": "ac816b99-e204-56c3-9908-6fad15c23c1e",
+      "name": "Workflow contract",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        120,
+        20
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 5
+            }
+          ]
+        }
+      },
+      "id": "740e142b-29f4-5cb1-a8dd-f34b2377bffd",
+      "name": "Five-minute dispatch schedule",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        120,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "http://api:8000/api/workflow-dispatches/pending",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth"
+      },
+      "id": "c4693081-61ca-532c-86c7-52993e8cbcf1",
+      "name": "Load pending dispatches",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        400,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      },
+      "settings": {
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 2000
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const rows = $input.first().json.items;\nif (!Array.isArray(rows)) throw new Error('Pending dispatch response has no items array');\nreturn rows.slice(0, 20).map((row) => ({json:row}));"
+      },
+      "id": "bd6731da-1702-5c67-a408-668205d3f913",
+      "name": "Cap and expand pending batch",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "c8d5e947-10cb-5ee8-9f40-1ceea1742c23",
+      "name": "For each pending dispatch",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        960,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://api:8000/api/workflow-dispatches/' + $('For each pending dispatch').item.json.id + '/attempt' }}",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({}) }}"
+      },
+      "id": "693380a6-3d0b-5343-b29f-de8ad5aca5fd",
+      "name": "Record dispatch attempt",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1230,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "1849a998-bd8a-56c7-8c3f-409cbb573c75",
+              "leftValue": "={{ $json.execute === true }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        }
+      },
+      "id": "7ab11aac-a6e6-55f0-b0aa-52b195ceb067",
+      "name": "Dispatch attempt authorized",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1500,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "81fc51a6-8273-52bb-87b6-f94493cccff9",
+              "leftValue": "={{ $json.kind === 'approval' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        }
+      },
+      "id": "4174768e-2207-5d33-aaa6-7b24e8002513",
+      "name": "Dispatch is approval",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1770,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "1acf8b6d-98f7-50b9-8d1d-085cd000bc32",
+              "leftValue": "={{ $json.kind === 'submission' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        }
+      },
+      "id": "f11f4ccc-e40a-5a02-9d96-bfb5b5825be0",
+      "name": "Dispatch is submission",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2040,
+        470
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "5c927941-49ed-5a5c-b37f-764a83c18847",
+              "leftValue": "={{ $json.kind === 'recovery' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        }
+      },
+      "id": "ba277b37-6488-58fd-83a3-4619f596daca",
+      "name": "Dispatch is recovery",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2310,
+        630
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://n8n:5678/webhook/clientlaunch/provision",
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($('For each pending dispatch').item.json.payload) }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Idempotency-Key",
+              "value": "={{ $('For each pending dispatch').item.json.id }}"
+            }
+          ]
+        }
+      },
+      "id": "3a1bc7d7-85db-5bcf-ae3e-8367fb480450",
+      "name": "Trigger approved provisioning",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2040,
+        150
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://n8n:5678/webhook/clientlaunch/submission",
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($('For each pending dispatch').item.json.payload) }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Idempotency-Key",
+              "value": "={{ $('For each pending dispatch').item.json.id }}"
+            }
+          ]
+        }
+      },
+      "id": "f68f9a3e-2b31-5e86-bff1-72e3ac5ef668",
+      "name": "Trigger stored submission",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2310,
+        350
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://n8n:5678/webhook/clientlaunch/recover",
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($('For each pending dispatch').item.json.payload) }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Idempotency-Key",
+              "value": "={{ $('For each pending dispatch').item.json.id }}"
+            }
+          ]
+        }
+      },
+      "id": "8c51b9fe-a1db-5d3b-bf61-3610b3efc58a",
+      "name": "Trigger safe recovery",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2580,
+        530
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "9dfd63ec-218a-58f2-9682-4984d9be0ef5",
+              "leftValue": "={{ Number($json.statusCode) >= 200 && Number($json.statusCode) < 300 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        }
+      },
+      "id": "b2c83440-e07e-5e4f-aaa1-9a8a7b2b2483",
+      "name": "Webhook accepted dispatch",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2830,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://api:8000/api/workflow-dispatches/' + $('For each pending dispatch').item.json.id + '/ack' }}",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({}) }}"
+      },
+      "id": "31b720f6-b960-5044-a256-2eaa9693cbfa",
+      "name": "Acknowledge accepted dispatch",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3100,
+        210
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Five-minute dispatch schedule": {
+      "main": [
+        [
+          {
+            "node": "Load pending dispatches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load pending dispatches": {
+      "main": [
+        [
+          {
+            "node": "Cap and expand pending batch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cap and expand pending batch": {
+      "main": [
+        [
+          {
+            "node": "For each pending dispatch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "For each pending dispatch": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Record dispatch attempt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record dispatch attempt": {
+      "main": [
+        [
+          {
+            "node": "Dispatch attempt authorized",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dispatch attempt authorized": {
+      "main": [
+        [
+          {
+            "node": "Dispatch is approval",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "For each pending dispatch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dispatch is approval": {
+      "main": [
+        [
+          {
+            "node": "Trigger approved provisioning",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Dispatch is submission",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dispatch is submission": {
+      "main": [
+        [
+          {
+            "node": "Trigger stored submission",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Dispatch is recovery",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dispatch is recovery": {
+      "main": [
+        [
+          {
+            "node": "Trigger safe recovery",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "For each pending dispatch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger approved provisioning": {
+      "main": [
+        [
+          {
+            "node": "Webhook accepted dispatch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger stored submission": {
+      "main": [
+        [
+          {
+            "node": "Webhook accepted dispatch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger safe recovery": {
+      "main": [
+        [
+          {
+            "node": "Webhook accepted dispatch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook accepted dispatch": {
+      "main": [
+        [
+          {
+            "node": "Acknowledge accepted dispatch",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "For each pending dispatch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Acknowledge accepted dispatch": {
+      "main": [
+        [
+          {
+            "node": "For each pending dispatch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "executionTimeout": 300,
+    "errorWorkflow": "CL08ErrorRoute01"
+  },
+  "staticData": null,
+  "pinData": {},
+  "tags": []
+}

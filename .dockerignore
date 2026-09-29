@@ -1,0 +1,12 @@
+.git
+.env
+.runtime
+.uv-cache
+node_modules
+apps/web/node_modules
+apps/web/dist
+__pycache__
+*.pyc
+*.sqlite3
+data
+screenshots

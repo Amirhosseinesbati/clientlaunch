@@ -1,0 +1,609 @@
+{
+  "id": "CL08TaskSync001",
+  "name": "ClientLaunch | Sync checklist to Trello",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## ClientLaunch | Sync checklist to Trello\nPending checklist cards → claim each write → DEMO or connected Trello → persist provider card ID and status.\n\nInput/output contracts: manifest.json.",
+        "height": 170,
+        "width": 450
+      },
+      "id": "835c2705-046b-53cc-9fa9-5df2788add71",
+      "name": "Workflow contract",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        120,
+        20
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "clientlaunch/task-sync",
+        "responseMode": "onReceived",
+        "options": {
+          "responseCode": 202
+        },
+        "authentication": "headerAuth"
+      },
+      "id": "84f5da90-2a37-5196-b2da-838625a5029a",
+      "name": "Receive task sync request",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        120,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      },
+      "webhookId": "0f26b82d-c9c5-55eb-be38-3a73449a6996"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://api:8000/api/onboardings/' + $('Receive task sync request').first().json.body.onboarding_id + '/task-sync/reconcile' }}",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({}) }}"
+      },
+      "id": "8cd341e3-03bd-5567-9d31-0108fa333980",
+      "name": "Reconcile expired card claims",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        260,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ 'http://api:8000/api/onboardings/' + $('Receive task sync request').first().json.body.onboarding_id + '/task-sync/pending' }}",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth"
+      },
+      "id": "4da0febf-66fa-5312-ab61-7499bf249aa3",
+      "name": "Load pending card operations",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        390,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      },
+      "settings": {
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 2000
+      }
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "79f3f45a-cd7b-562b-a5a4-4d1b427b82af",
+      "name": "For each pending card",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        650,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://api:8000/api/onboardings/' + $('Receive task sync request').first().json.body.onboarding_id + '/task-sync/' + $('For each pending card').item.json.operation_id + '/claim' }}",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({expected_status:$('For each pending card').item.json.status,expected_idempotency_key:$('For each pending card').item.json.idempotency_key}) }}"
+      },
+      "id": "861cd86f-2a65-53f2-8a4f-f23f14a87bce",
+      "name": "Claim card operation",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        900,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "f241e2d0-9bdf-596a-bbd5-b10df06fb083",
+              "leftValue": "={{ $json.execute === true }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        }
+      },
+      "id": "7e735882-954b-551e-bd5a-b0f3ba5c6b52",
+      "name": "Card write authorized",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1150,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "3fabd512-233b-5cbe-9d77-5994051ce392",
+              "leftValue": "={{ $('For each pending card').item.json.connector_mode === 'connected' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        }
+      },
+      "id": "c82bc2ba-ef62-5bd5-b55a-d19b919a5626",
+      "name": "Use connected Trello cards",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1400,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "0065266a-3a23-5148-984a-1d85cd812db3",
+              "leftValue": "={{ $('For each pending card').item.json.action === 'create' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        }
+      },
+      "id": "75c8b17a-7447-5b17-8a26-c49e2cdf101f",
+      "name": "Connected card is new",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1650,
+        130
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "fb8aaf24-94bc-5316-b542-7d0c4b5dfcef",
+              "leftValue": "={{ $('For each pending card').item.json.action === 'create' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        }
+      },
+      "id": "fd5b453a-e8d3-5d72-8016-476baa9f7324",
+      "name": "Demo card is new",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1650,
+        470
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'https://api.trello.com/1/cards?idList=' + encodeURIComponent($('For each pending card').item.json.todo_list_id) + '&name=' + encodeURIComponent($('For each pending card').item.json.title) + '&desc=' + encodeURIComponent('Status: ' + $('For each pending card').item.json.status + '\\n' + $('For each pending card').item.json.description) }}",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "trelloApi"
+      },
+      "id": "991ef5da-8fee-586b-9a9b-d025c965bcfd",
+      "name": "Create Trello card",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1900,
+        40
+      ],
+      "credentials": {
+        "trelloApi": {
+          "id": "__TRELLO_CREDENTIAL_ID__",
+          "name": "Trello API (configure)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "={{ 'https://api.trello.com/1/cards/' + encodeURIComponent($('For each pending card').item.json.external_card_id) + '?desc=' + encodeURIComponent('Status: ' + $('For each pending card').item.json.status + '\\n' + $('For each pending card').item.json.description) + '&dueComplete=' + ($('For each pending card').item.json.status === 'completed' ? 'true' : 'false') }}",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "trelloApi"
+      },
+      "id": "1be7066c-accf-55dd-9020-361947cc6824",
+      "name": "Update Trello card",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1900,
+        220
+      ],
+      "credentials": {
+        "trelloApi": {
+          "id": "__TRELLO_CREDENTIAL_ID__",
+          "name": "Trello API (configure)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://api:8000/sim/trello/cards",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({board_id:$('For each pending card').item.json.external_board_id,name:$('For each pending card').item.json.title,description:$('For each pending card').item.json.description,due_date:$('For each pending card').item.json.due_date,status:$('For each pending card').item.json.status,idempotency_key:$('For each pending card').item.json.idempotency_key}) }}"
+      },
+      "id": "b27414ff-b487-5ed3-b69b-e8f38e7674fa",
+      "name": "Create demo card",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1900,
+        390
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{ 'http://api:8000/sim/trello/cards/' + $('For each pending card').item.json.external_card_id }}",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({status:$('For each pending card').item.json.status,idempotency_key:$('For each pending card').item.json.idempotency_key}) }}"
+      },
+      "id": "540c4c97-1d55-5c5c-85fd-fda1c6655879",
+      "name": "Update demo card",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1900,
+        550
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://api:8000/api/onboardings/' + $('Receive task sync request').first().json.body.onboarding_id + '/task-sync/' + $('For each pending card').item.json.operation_id + '/complete' }}",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({external_id:$json.external_id || $json.id || $('For each pending card').item.json.external_card_id,status:$('For each pending card').item.json.status}) }}"
+      },
+      "id": "3280f6a8-41d4-5897-8dfd-15cc2017947e",
+      "name": "Record synced card",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2180,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Receive task sync request": {
+      "main": [
+        [
+          {
+            "node": "Reconcile expired card claims",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reconcile expired card claims": {
+      "main": [
+        [
+          {
+            "node": "Load pending card operations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load pending card operations": {
+      "main": [
+        [
+          {
+            "node": "For each pending card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "For each pending card": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Claim card operation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claim card operation": {
+      "main": [
+        [
+          {
+            "node": "Card write authorized",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Card write authorized": {
+      "main": [
+        [
+          {
+            "node": "Use connected Trello cards",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "For each pending card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Use connected Trello cards": {
+      "main": [
+        [
+          {
+            "node": "Connected card is new",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Demo card is new",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Connected card is new": {
+      "main": [
+        [
+          {
+            "node": "Create Trello card",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update Trello card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Demo card is new": {
+      "main": [
+        [
+          {
+            "node": "Create demo card",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update demo card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Trello card": {
+      "main": [
+        [
+          {
+            "node": "Record synced card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Trello card": {
+      "main": [
+        [
+          {
+            "node": "Record synced card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create demo card": {
+      "main": [
+        [
+          {
+            "node": "Record synced card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update demo card": {
+      "main": [
+        [
+          {
+            "node": "Record synced card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record synced card": {
+      "main": [
+        [
+          {
+            "node": "For each pending card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "executionTimeout": 300,
+    "errorWorkflow": "CL08ErrorRoute01"
+  },
+  "staticData": null,
+  "pinData": {},
+  "tags": []
+}

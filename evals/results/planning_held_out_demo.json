@@ -1,0 +1,525 @@
+{
+  "status": "complete",
+  "generated_at_utc": "2026-09-27T21:03:36.637874+00:00",
+  "source": "actual /plan route responses",
+  "split": "held_out",
+  "mode": "demo",
+  "dataset_dir": "./evals\\datasets",
+  "attempted": 55,
+  "responded": 55,
+  "errors": [],
+  "counts": {
+    "scope_tp": 20,
+    "scope_fp": 0,
+    "scope_fn": 28,
+    "required_tp": 230,
+    "required_fn": 28
+  },
+  "scope_precision": 1.0,
+  "scope_recall_diagnostic": 0.4166666666666667,
+  "required_input_recall": 0.8914728682170543,
+  "per_case": [
+    {
+      "scenario_id": "CL-EVAL-071",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "email:email_segments"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-049",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-030",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "analytics:tracking_events"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-061",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "ads:retargeting_audience"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-047",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "email:email_segments"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-046",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "analytics:tracking_events"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-074",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-037",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "ads:retargeting_audience"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-070",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "analytics:tracking_events"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-054",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "analytics:tracking_events"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-051",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "seo:business_locations"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-063",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "email:email_segments"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-078",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "analytics:tracking_events"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-065",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-044",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-031",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "email:email_segments"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-068",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-066",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-077",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "ads:retargeting_audience"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-055",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "email:email_segments"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-032",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-036",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-035",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "seo:business_locations"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-076",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-080",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-067",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "seo:business_locations"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-050",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-041",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-072",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-079",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "email:email_segments"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-039",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "email:email_segments"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-064",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-056",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-048",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-026",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-042",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-033",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-038",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "analytics:tracking_events"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-059",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "seo:business_locations"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-073",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-034",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-060",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-058",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-027",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "seo:business_locations"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-045",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "ads:retargeting_audience"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-028",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-069",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "ads:retargeting_audience"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-052",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-040",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-075",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "seo:business_locations"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-062",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "analytics:tracking_events"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-057",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-029",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "ads:retargeting_audience"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-053",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "ads:retargeting_audience"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-EVAL-043",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "seo:business_locations"
+      ],
+      "extra_scope": []
+    }
+  ],
+  "not_scored": [
+    "reminder decisions",
+    "recovery outcomes",
+    "connected Drive/Trello/SMTP",
+    "n8n triggered executions"
+  ]
+}

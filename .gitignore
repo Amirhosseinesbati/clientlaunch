@@ -1,0 +1,15 @@
+.env
+.runtime/
+.uv-cache/
+.venv/
+__pycache__/
+*.pyc
+*.sqlite3
+*.db
+apps/web/node_modules/
+apps/web/dist/
+data/generated/
+screenshots/private/
+
+# Local product brief; excluded from the public portfolio repository.
+/08-n8n-clientlaunch.md

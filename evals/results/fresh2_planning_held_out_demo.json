@@ -1,0 +1,523 @@
+{
+  "status": "complete",
+  "generated_at_utc": "2026-09-28T01:04:13.822847+00:00",
+  "source": "actual /plan route responses",
+  "split": "held_out",
+  "mode": "demo",
+  "dataset_dir": "evals\\datasets\\fresh2",
+  "attempted": 55,
+  "responded": 55,
+  "errors": [],
+  "counts": {
+    "scope_tp": 22,
+    "scope_fp": 1,
+    "scope_fn": 26,
+    "required_tp": 232,
+    "required_fn": 26
+  },
+  "scope_precision": 0.9565217391304348,
+  "scope_recall_diagnostic": 0.4583333333333333,
+  "required_input_recall": 0.8992248062015504,
+  "per_case": [
+    {
+      "scenario_id": "CL-FRESH2-056",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-055",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "email:email_segments"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-032",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-031",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "email:email_segments"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-066",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "brand:brand_guidelines"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-074",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "brand:brand_guidelines"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-075",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "seo:business_locations"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-080",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-057",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-030",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "analytics:tracking_events"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-045",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-078",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "analytics:tracking_events"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-079",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "email:email_segments"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-054",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-071",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "email:email_segments"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-036",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-047",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "email:email_segments"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-069",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "ads:retargeting_audience"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-048",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "ecommerce:catalog_details"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-052",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-058",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "brand:brand_guidelines"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-038",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "analytics:tracking_events"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-037",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-044",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-077",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-035",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "seo:business_locations"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-033",
+      "scope_tp": 1,
+      "scope_fp": 1,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": [
+        "website:booking_rules"
+      ]
+    },
+    {
+      "scenario_id": "CL-FRESH2-039",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "email:email_segments"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-029",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-043",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-065",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-053",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "ads:retargeting_audience"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-051",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-063",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "email:email_segments"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-046",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "analytics:tracking_events"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-060",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-040",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-027",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-068",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-067",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-041",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-050",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "brand:brand_guidelines"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-042",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "brand:brand_guidelines"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-076",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-061",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-062",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-070",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "analytics:tracking_events"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-073",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "website:language_versions"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-064",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-059",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "seo:business_locations"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-026",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "brand:brand_guidelines"
+      ],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-049",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-072",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-028",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH2-034",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 1,
+      "required_missing": [
+        "brand:brand_guidelines"
+      ],
+      "extra_scope": []
+    }
+  ],
+  "not_scored": [
+    "reminder decisions",
+    "recovery outcomes",
+    "connected Drive/Trello/SMTP",
+    "n8n triggered executions"
+  ]
+}

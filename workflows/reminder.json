@@ -1,0 +1,372 @@
+{
+  "id": "CL08Reminder001",
+  "name": "ClientLaunch | Evaluate reminders",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## ClientLaunch | Evaluate reminders\nDaily schedule or authenticated DEMO run → due query → approved pending reminders → DEMO outbox or authorized SMTP → dispatch acknowledgment.\n\nInput/output contracts: manifest.json.",
+        "height": 170,
+        "width": 450
+      },
+      "id": "eff48f20-4422-5171-b7d8-fc626e825d70",
+      "name": "Workflow contract",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        120,
+        20
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 24
+            }
+          ]
+        }
+      },
+      "id": "3c4ed6e9-997f-5e00-bd27-fc8542e30417",
+      "name": "Daily reminder schedule",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        120,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "clientlaunch/reminder-run",
+        "responseMode": "onReceived",
+        "options": {
+          "responseCode": 202
+        },
+        "authentication": "headerAuth"
+      },
+      "id": "ea212b98-7aaf-5908-85c2-877e22812ee9",
+      "name": "Receive controlled reminder run",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        120,
+        520
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      },
+      "webhookId": "e7e34933-c3be-5a85-87e0-fa0aa6312f41"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://api:8000/api/reminders/evaluate",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({}) }}"
+      },
+      "id": "e5ea931d-aa0c-58f6-9848-58cbbecf7dc7",
+      "name": "Evaluate due items",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        420,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "http://api:8000/api/reminders/approved-pending",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth"
+      },
+      "id": "f58b95c4-7dea-5c73-ba94-8d36827143cf",
+      "name": "Get approved reminders",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        700,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      },
+      "settings": {
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 2000
+      }
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "df162ecf-ef49-5844-a6a0-b18c3f273315",
+      "name": "For each approved reminder",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        960,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "b42ad7e3-9aec-5c5b-8895-ed371d1b3342",
+              "leftValue": "={{ $json.connector_mode === 'connected' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        }
+      },
+      "id": "a7d0cd51-e959-59a3-87fd-40a819a1126e",
+      "name": "Reminder needs SMTP",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1240,
+        390
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://api:8000/api/reminders/' + $json.id + '/dispatch' }}",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({}) }}"
+      },
+      "id": "dcd44f1e-c8b2-5061-8de7-7832204dc745",
+      "name": "Record demo reminder",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1500,
+        520
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $json.from }}",
+        "toEmail": "={{ $json.to }}",
+        "subject": "={{ $json.subject }}",
+        "emailFormat": "text",
+        "text": "={{ $json.body }}",
+        "options": {}
+      },
+      "id": "ce2fe5d5-b890-5638-9098-cd3fc8f6dd4f",
+      "name": "Send authorized reminder",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1500,
+        260
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "__SMTP_CREDENTIAL_ID__",
+          "name": "Authorized SMTP (configure)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://api:8000/api/reminders/' + $('Reminder needs SMTP').first().json.id + '/dispatch' }}",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({provider_message_id:$json.messageId || $json.message_id}) }}"
+      },
+      "id": "fe403ee7-1683-5fea-8934-e955b67c5bd7",
+      "name": "Acknowledge SMTP reminder",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1770,
+        260
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Daily reminder schedule": {
+      "main": [
+        [
+          {
+            "node": "Evaluate due items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Receive controlled reminder run": {
+      "main": [
+        [
+          {
+            "node": "Evaluate due items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluate due items": {
+      "main": [
+        [
+          {
+            "node": "Get approved reminders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get approved reminders": {
+      "main": [
+        [
+          {
+            "node": "For each approved reminder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "For each approved reminder": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Reminder needs SMTP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reminder needs SMTP": {
+      "main": [
+        [
+          {
+            "node": "Send authorized reminder",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Record demo reminder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send authorized reminder": {
+      "main": [
+        [
+          {
+            "node": "Acknowledge SMTP reminder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Acknowledge SMTP reminder": {
+      "main": [
+        [
+          {
+            "node": "For each approved reminder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record demo reminder": {
+      "main": [
+        [
+          {
+            "node": "For each approved reminder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "executionTimeout": 300,
+    "errorWorkflow": "CL08ErrorRoute01"
+  },
+  "staticData": null,
+  "pinData": {},
+  "tags": []
+}

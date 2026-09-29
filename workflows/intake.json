@@ -1,0 +1,297 @@
+{
+  "id": "CL08DealIntake01",
+  "name": "ClientLaunch | Receive won deal",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## ClientLaunch | Receive won deal\nSigned event → API verification and durable receipt → prompt acknowledgment → AI draft. Duplicates stop after acknowledgment.\n\nInput/output contracts: manifest.json.",
+        "height": 170,
+        "width": 450
+      },
+      "id": "ec803a86-9b62-5f9f-b325-88310215331b",
+      "name": "Workflow contract",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        120,
+        20
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "clientlaunch/won-deal",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "931032f0-0934-5012-91ac-ab549415062f",
+      "name": "Receive signed won deal",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        120,
+        300
+      ],
+      "webhookId": "d866d3d3-97f7-5df1-9dce-f9f8a70fe419"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://api:8000/api/events/won-deal",
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.body) }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-ClientLaunch-Signature",
+              "value": "={{ $json.headers['x-clientlaunch-signature'] }}"
+            }
+          ]
+        }
+      },
+      "id": "cbdbed79-db16-52c5-bfdd-cd4bb691cb1c",
+      "name": "Verify and persist deal",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        390,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json.statusCode >= 400 ? {accepted:false,error:$json.body?.detail || $json.body?.message || 'Rejected'} : {accepted:true,onboarding_id:$json.body.onboarding_id,duplicate:$json.body.duplicate}) }}",
+        "options": {
+          "responseCode": "={{ $json.statusCode }}"
+        }
+      },
+      "id": "8a487e48-1f11-5c05-b2cd-96089c432992",
+      "name": "Acknowledge verified deal",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        650,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "3525214b-2fae-5fe1-9942-7cf7eb7d8851",
+              "leftValue": "={{ $('Verify and persist deal').first().json.statusCode >= 400 || $('Verify and persist deal').first().json.body.duplicate === true }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        }
+      },
+      "id": "f03ee498-dd99-5681-a067-06a1f23161aa",
+      "name": "Already received",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        900,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ 'http://api:8000/api/onboardings/' + $('Verify and persist deal').first().json.body.onboarding_id }}",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth"
+      },
+      "id": "cd791a4a-d669-516a-9192-6864658fa033",
+      "name": "Load onboarding",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1160,
+        400
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      },
+      "settings": {
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 2000
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://ai:8001/plan",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({onboarding_id:$json.onboarding.id,client_name:$json.onboarding.client_name,approved_scope:$json.deal.approved_scope,purchased_services:$json.deal.services,reference_date:$json.onboarding.reference_date}) }}"
+      },
+      "id": "2a9eff9b-6a9e-505c-a7b7-2b48913c1824",
+      "name": "Draft AI plan",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1430,
+        400
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://api:8000/api/onboardings/' + $('Load onboarding').first().json.onboarding.id + '/plan' }}",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}"
+      },
+      "id": "a8667cd9-6f91-5961-9a98-6332bf833d48",
+      "name": "Store review draft",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1700,
+        400
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Receive signed won deal": {
+      "main": [
+        [
+          {
+            "node": "Verify and persist deal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify and persist deal": {
+      "main": [
+        [
+          {
+            "node": "Acknowledge verified deal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Acknowledge verified deal": {
+      "main": [
+        [
+          {
+            "node": "Already received",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Already received": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Load onboarding",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load onboarding": {
+      "main": [
+        [
+          {
+            "node": "Draft AI plan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Draft AI plan": {
+      "main": [
+        [
+          {
+            "node": "Store review draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "executionTimeout": 300,
+    "errorWorkflow": "CL08ErrorRoute01"
+  },
+  "staticData": null,
+  "pinData": {},
+  "tags": []
+}

@@ -1,0 +1,165 @@
+{
+  "id": "CL08DriveFolder01",
+  "name": "ClientLaunch | Provision Drive folder",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## ClientLaunch | Provision Drive folder\nClaimed folder operation → DEMO simulator or connected Drive → provider result. Reconcile uncertain writes before retry.\n\nInput/output contracts: manifest.json.",
+        "height": 170,
+        "width": 450
+      },
+      "id": "6fce1b84-6580-5b5a-8aa6-d20517e9a255",
+      "name": "Workflow contract",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        120,
+        20
+      ]
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "id": "25f1fe63-cfd6-5acf-b735-ea8ee31e4ce3",
+      "name": "Accept folder operation",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        120,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "481e97cd-f694-5153-a3b8-478943a1bb5f",
+              "leftValue": "={{ $json.connector_mode === 'connected' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        }
+      },
+      "id": "713a9eb2-6c9a-5a0b-a45b-26fd11d2a9a3",
+      "name": "Use connected Drive",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        360,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://api:8000/sim/drive/folders",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({onboarding_id:$json.onboarding_id,name:$json.request_payload.name,parent_id:$json.request_payload.parent_id,idempotency_key:$json.idempotency_key}) }}"
+      },
+      "id": "4116f803-0960-5e6e-9b8e-b8e894de0362",
+      "name": "Create demo folder",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        620,
+        420
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://www.googleapis.com/drive/v3/files?fields=id,name,webViewLink",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDriveOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({name:$json.request_payload.name,mimeType:'application/vnd.google-apps.folder',...($json.request_payload.parent_id ? {parents:[$json.request_payload.parent_id]} : {})}) }}"
+      },
+      "id": "56ac57fe-b053-56f0-a5f0-f572c7c27794",
+      "name": "Create Google Drive folder",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        620,
+        180
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "__GOOGLE_DRIVE_CREDENTIAL_ID__",
+          "name": "Google Drive OAuth2 (configure)"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Accept folder operation": {
+      "main": [
+        [
+          {
+            "node": "Use connected Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Use connected Drive": {
+      "main": [
+        [
+          {
+            "node": "Create Google Drive folder",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create demo folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "executionTimeout": 300,
+    "errorWorkflow": "CL08ErrorRoute01"
+  },
+  "staticData": null,
+  "pinData": {},
+  "tags": []
+}

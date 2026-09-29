@@ -1,0 +1,50 @@
+{
+  "website:language_versions": [
+    "We serve customers in Quebec and Ontario, so the new site should let visitors switch between French and English.",
+    "Our hotel gets most bookings from German and Spanish travelers, and each group should see the site in its own language.",
+    "Please plan separate Arabic and English versions of the landing pages, including right-to-left layout where needed.",
+    "We're expanding into Japan next quarter and need to know which existing pages should also be published in Japanese."
+  ],
+  "website:booking_rules": [
+    "Guests should be able to reserve a table online, but same-day bookings must close two hours before service.",
+    "For consultations, we only accept appointments on weekdays and require at least 24 hours' notice for cancellations.",
+    "Each tour has twelve seats, and a booking should be confirmed only after the deposit is paid.",
+    "Clients can choose a 30- or 60-minute session, with a 15-minute gap between appointments."
+  ],
+  "brand:brand_guidelines": [
+    "Our rebrand is almost complete, and the agency should use the approved logo, colors, and typefaces across the site.",
+    "The campaign needs to sound like our established brand, so we'll share the voice guide and examples of approved copy.",
+    "Please keep the packaging designs consistent with our existing visual identity and logo usage rules.",
+    "We have a style manual covering color codes, photography, and how much clear space to leave around the mark."
+  ],
+  "seo:business_locations": [
+    "We have clinics in Bristol, Bath, and Cardiff, and each office needs its own page for local search.",
+    "Our plumbers work across several London boroughs even though the company has just one physical office.",
+    "Please make sure searchers can find the correct address and phone number for each of our three shops.",
+    "We are opening a second showroom in Manchester and want it included in the local SEO rollout."
+  ],
+  "ads:retargeting_audience": [
+    "We'd like ads to reach people who viewed the pricing page but left without requesting a demo.",
+    "Please show a reminder campaign to cart abandoners while excluding customers who already checked out.",
+    "Anyone who watched most of our product video should see a follow-up ad for the trial offer.",
+    "For the launch, focus the remarketing budget on past site visitors from the last 30 days who haven't signed up."
+  ],
+  "analytics:tracking_events": [
+    "We need to measure when visitors click the call button, submit the contact form, and complete a booking.",
+    "Can the dashboard show how many shoppers add a product to the cart before they purchase?",
+    "Please record trial sign-ups and demo requests as separate conversions rather than combining them.",
+    "The team wants to track brochure downloads, video plays, and clicks on the outbound partner link."
+  ],
+  "email:email_segments": [
+    "New subscribers should receive a welcome series, while customers with previous orders get the loyalty offers.",
+    "We want different newsletters for wholesale buyers and individual shoppers.",
+    "Please send the renewal reminder only to members whose subscriptions expire within 30 days.",
+    "The spring campaign should target inactive customers separately from people who bought in the last month."
+  ],
+  "ecommerce:catalog_details": [
+    "We'll need to load 150 products with their SKUs, descriptions, prices, and current stock counts.",
+    "Each jacket comes in several sizes and colors, and every variant has its own inventory level.",
+    "The store should show the correct product photos, dimensions, and prices for our furniture range.",
+    "Our supplier will provide a spreadsheet of item names, categories, variant codes, and sale prices for the online catalog."
+  ]
+}

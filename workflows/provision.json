@@ -1,0 +1,963 @@
+{
+  "id": "CL08Provision001",
+  "name": "ClientLaunch | Approved provisioning",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## ClientLaunch | Approved provisioning\nApproved plan → claimed folder/board writes → persisted resources → task sync → approved welcome.\n\nInput/output contracts: manifest.json.",
+        "height": 170,
+        "width": 450
+      },
+      "id": "bd39672c-249a-5032-b308-c8fa778f9c62",
+      "name": "Workflow contract",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        120,
+        20
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "clientlaunch/provision",
+        "responseMode": "onReceived",
+        "options": {
+          "responseCode": 202
+        },
+        "authentication": "headerAuth"
+      },
+      "id": "9725ba3e-d085-54fe-844b-4fc8684d88f2",
+      "name": "Receive approved plan",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        120,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      },
+      "webhookId": "6302b2bc-f1c9-5fa5-adf3-3df8f85204cd"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ 'http://api:8000/api/onboardings/' + $json.body.onboarding_id }}",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth"
+      },
+      "id": "7c4db655-7bcc-591e-8745-b501dae18cf2",
+      "name": "Load approved onboarding",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        390,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      },
+      "settings": {
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 2000
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://api:8000/api/onboardings/' + $('Load approved onboarding').first().json.onboarding.id + '/provisioning/claim' }}",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({system:'drive',action:'create_folder',request_payload:{name:$json.onboarding.folder_name} }) }}"
+      },
+      "id": "1aea59aa-bf15-5389-87b3-fa124c96c050",
+      "name": "Claim folder operation",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        680,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "70a2171b-b5b4-51ca-8611-202335438a06",
+              "leftValue": "={{ $json.execute === true }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        }
+      },
+      "id": "84794857-0ab2-53f7-8b4d-a64346fac28a",
+      "name": "Folder needs creation",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        950,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "value": "CL08DriveFolder01",
+          "mode": "id"
+        },
+        "mode": "each",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "id": "8cd3355f-7989-5b04-8464-ec7eafb5635b",
+      "name": "Provision Drive folder",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1210,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://api:8000/api/onboardings/' + $('Load approved onboarding').first().json.onboarding.id + '/provisioning/' + $('Claim folder operation').first().json.operation_id + '/complete' }}",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({outcome:'success',external_id:$json.external_id || $json.id,url:$json.url || $json.webViewLink,name:$json.name}) }}"
+      },
+      "id": "a20daf98-c433-5040-8394-ab2fd731dd15",
+      "name": "Record folder resource",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1480,
+        180
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ 'http://api:8000/api/onboardings/' + $('Load approved onboarding').first().json.onboarding.id + '/provisioning/folders/next' }}",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth"
+      },
+      "id": "d8a446d2-9b98-5ded-b89a-2677fe0a8dbb",
+      "name": "Load next child folder",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1740,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      },
+      "settings": {
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 2000
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "e4d3e763-7826-58e7-aff0-c19656f856fa",
+              "leftValue": "={{ $json.done !== true && $json.blocked !== true && !!$json.folder?.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        }
+      },
+      "id": "c82700be-e6bf-5c25-b1e6-3a1e1303718e",
+      "name": "Child folder pending",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2010,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "08a43dd8-57d2-58c2-b57e-001470a75b77",
+              "leftValue": "={{ $json.done === true }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        }
+      },
+      "id": "8c0c67b3-1c97-554b-b0ff-091f29e2ae86",
+      "name": "All child folders ready",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2280,
+        490
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://api:8000/api/onboardings/' + $('Load approved onboarding').first().json.onboarding.id + '/provisioning/claim' }}",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({system:'drive',action:'create_child_folder',folder_id:$json.folder.id}) }}"
+      },
+      "id": "f9195ac5-5f58-5bd4-a9ce-da82e9a7923b",
+      "name": "Claim child folder operation",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2280,
+        130
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "239d3328-b0d4-55fa-8365-c220a45ad769",
+              "leftValue": "={{ $json.execute === true }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        }
+      },
+      "id": "24ec9498-1b2e-5358-8eb7-c3efa0a0c81a",
+      "name": "Child folder write authorized",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2550,
+        130
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "d4c609d8-d348-5142-bac8-2bbe00745b23",
+              "leftValue": "={{ $json.status === 'succeeded' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        }
+      },
+      "id": "4c8f5d5d-89e3-55c2-aaed-ceba77512914",
+      "name": "Prior child folder confirmed",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2820,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "value": "CL08DriveFolder01",
+          "mode": "id"
+        },
+        "mode": "each",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "id": "bb6cc506-65f2-508d-be47-b4beff9c38c9",
+      "name": "Provision Drive child folder",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        2820,
+        20
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://api:8000/api/onboardings/' + $('Load approved onboarding').first().json.onboarding.id + '/provisioning/' + $('Claim child folder operation').last().json.operation_id + '/complete' }}",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({outcome:'success',external_id:$json.external_id || $json.id,url:$json.url || $json.webViewLink,name:$json.name}) }}"
+      },
+      "id": "5424f09a-0e6e-57b4-9ad0-48e6c0913d5f",
+      "name": "Record child folder resource",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3090,
+        20
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://api:8000/api/onboardings/' + $('Load approved onboarding').first().json.onboarding.id + '/provisioning/claim' }}",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({system:'trello',action:'create_board',request_payload:{name:$('Load approved onboarding').first().json.onboarding.board_name} }) }}"
+      },
+      "id": "3871476a-e8cd-563b-93e9-3a442e2ec8bf",
+      "name": "Claim board operation",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3360,
+        490
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "47678154-7c22-5bd6-82f9-5cc7c361a15a",
+              "leftValue": "={{ $json.execute === true }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        }
+      },
+      "id": "5bac6160-c8f1-52db-a3f2-4aaa3a2b7b97",
+      "name": "Board needs creation",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3630,
+        490
+      ]
+    },
+    {
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "value": "CL08TrelloBoard1",
+          "mode": "id"
+        },
+        "mode": "each",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "id": "9eef9fa1-f07b-57c7-9c81-e4a08bf9b80f",
+      "name": "Provision Trello board",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        3900,
+        360
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://api:8000/api/onboardings/' + $('Load approved onboarding').first().json.onboarding.id + '/provisioning/' + $('Claim board operation').first().json.operation_id + '/complete' }}",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({outcome:'success',external_id:$json.external_id || $json.id,url:$json.url || $json.shortUrl,name:$json.name,todo_list_id:$json.todo_list_id}) }}"
+      },
+      "id": "63e5bb42-af69-5cfc-818a-5d9494aedf34",
+      "name": "Record board resource",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4170,
+        360
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://n8n:5678/webhook/clientlaunch/task-sync",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({onboarding_id:$('Load approved onboarding').first().json.onboarding.id}) }}"
+      },
+      "id": "1dade76e-4b5c-523e-bc5a-db5bbe5b6581",
+      "name": "Trigger Trello task sync",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4440,
+        490
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://api:8000/api/onboardings/' + $('Load approved onboarding').first().json.onboarding.id + '/welcome' }}",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({}) }}"
+      },
+      "id": "b8a072f7-24b0-538e-895d-fd63f5642fe9",
+      "name": "Queue approved welcome",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4710,
+        490
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "d7c081ef-0003-5901-85fc-0bee253cdfad",
+              "leftValue": "={{ $json.dispatch_required === true }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        }
+      },
+      "id": "4b9cf0e9-14bf-55c6-a33a-614c38278f67",
+      "name": "Welcome requires SMTP",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        4980,
+        490
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $json.from }}",
+        "toEmail": "={{ $json.to }}",
+        "subject": "={{ $json.subject }}",
+        "emailFormat": "text",
+        "text": "={{ $json.body }}",
+        "options": {}
+      },
+      "id": "6b3da988-5bf0-5a10-b069-925d017edee9",
+      "name": "Send authorized welcome",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        5250,
+        360
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "__SMTP_CREDENTIAL_ID__",
+          "name": "Authorized SMTP (configure)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://api:8000/api/outbox/' + $('Queue approved welcome').first().json.id + '/ack' }}",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({provider_message_id:$json.messageId || $json.message_id}) }}"
+      },
+      "id": "17bee6bf-89d6-5c82-b52e-6d54c97951f2",
+      "name": "Acknowledge SMTP welcome",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5520,
+        360
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Receive approved plan": {
+      "main": [
+        [
+          {
+            "node": "Load approved onboarding",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load approved onboarding": {
+      "main": [
+        [
+          {
+            "node": "Claim folder operation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claim folder operation": {
+      "main": [
+        [
+          {
+            "node": "Folder needs creation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Folder needs creation": {
+      "main": [
+        [
+          {
+            "node": "Provision Drive folder",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Load next child folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Provision Drive folder": {
+      "main": [
+        [
+          {
+            "node": "Record folder resource",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record folder resource": {
+      "main": [
+        [
+          {
+            "node": "Load next child folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load next child folder": {
+      "main": [
+        [
+          {
+            "node": "Child folder pending",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Child folder pending": {
+      "main": [
+        [
+          {
+            "node": "Claim child folder operation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "All child folders ready",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "All child folders ready": {
+      "main": [
+        [
+          {
+            "node": "Claim board operation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claim child folder operation": {
+      "main": [
+        [
+          {
+            "node": "Child folder write authorized",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Child folder write authorized": {
+      "main": [
+        [
+          {
+            "node": "Provision Drive child folder",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prior child folder confirmed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Provision Drive child folder": {
+      "main": [
+        [
+          {
+            "node": "Record child folder resource",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record child folder resource": {
+      "main": [
+        [
+          {
+            "node": "Load next child folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prior child folder confirmed": {
+      "main": [
+        [
+          {
+            "node": "Load next child folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claim board operation": {
+      "main": [
+        [
+          {
+            "node": "Board needs creation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Board needs creation": {
+      "main": [
+        [
+          {
+            "node": "Provision Trello board",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Trigger Trello task sync",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Provision Trello board": {
+      "main": [
+        [
+          {
+            "node": "Record board resource",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record board resource": {
+      "main": [
+        [
+          {
+            "node": "Trigger Trello task sync",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger Trello task sync": {
+      "main": [
+        [
+          {
+            "node": "Queue approved welcome",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Queue approved welcome": {
+      "main": [
+        [
+          {
+            "node": "Welcome requires SMTP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Welcome requires SMTP": {
+      "main": [
+        [
+          {
+            "node": "Send authorized welcome",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send authorized welcome": {
+      "main": [
+        [
+          {
+            "node": "Acknowledge SMTP welcome",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "executionTimeout": 300,
+    "errorWorkflow": "CL08ErrorRoute01"
+  },
+  "staticData": null,
+  "pinData": {},
+  "tags": []
+}

@@ -1,0 +1,25 @@
+{
+  "as_of": "2026-09-28",
+  "synthetic_dataset": {
+    "status": "generated",
+    "requests": 80,
+    "labels": 80,
+    "development": 25,
+    "held_out": 55
+  },
+  "planning_evaluation": {
+    "status": "completed_demo_fixture_only",
+    "development": "25/25 responses; scope precision 22/22; required input recall 122/122",
+    "original_held_out": "55/55 responses; scope precision 20/20; scope recall 20/48; required input recall 230/258 (below 90% target)",
+    "fresh_held_out": "55/55 responses; scope precision 16/16; scope recall 16/48; required input recall 226/258 (below target)",
+    "fresh2_held_out": "55/55 responses; scope precision 22/23; scope recall 22/48; required input recall 232/258 (below target)",
+    "fresh3_held_out": "55/55 responses; scope precision 20/20; scope recall 20/48; required input recall 230/258 (below target)",
+    "fresh4_held_out": "55/55 responses; scope precision 35/35; scope recall 35/48; required input recall 245/258 (synthetic DEMO targets met)",
+    "historical_diagnostic_sets": ["original", "fresh", "fresh2", "fresh3"],
+    "result_files": ["planning_development_demo.json", "planning_held_out_demo.json", "fresh_planning_held_out_demo.json", "fresh2_planning_held_out_demo.json", "fresh3_planning_held_out_demo.json", "fresh4_output/results/fresh4_planning_held_out_demo.json"]
+  },
+  "n8n_triggered_scenarios": "not_run",
+  "browser_visual_verification": "manual 1440/1024/390 viewport QA completed; screenshots not exported; approval UI action blocked by automatic review",
+  "connected_integrations": "not_run",
+  "note": "Reported planning values are deterministic synthetic DEMO fixture metrics only. No latency, n8n, connected-model or customer accuracy is claimed."
+}

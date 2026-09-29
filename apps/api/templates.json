@@ -1,0 +1,83 @@
+[
+  {
+    "service_code": "website",
+    "name": "Website launch",
+    "folders": ["01 Strategy", "02 Brand assets", "03 Content", "04 Design", "05 Build", "06 Launch"],
+    "tasks": [
+      {"key": "brand_logo", "title": "Upload your brand logo", "required": true},
+      {"key": "website_copy", "title": "Provide approved page copy", "required": true},
+      {"key": "domain_access", "title": "Share domain access details", "required": true},
+      {"key": "kickoff_availability", "title": "Share kickoff availability", "required": true}
+    ]
+  },
+  {
+    "service_code": "brand",
+    "name": "Brand identity",
+    "folders": ["01 Discovery", "02 References", "03 Concepts", "04 Final assets"],
+    "tasks": [
+      {"key": "existing_brand_files", "title": "Upload existing brand files", "required": true},
+      {"key": "brand_references", "title": "Share three visual references", "required": true},
+      {"key": "stakeholder_list", "title": "Name brand decision makers", "required": true}
+    ]
+  },
+  {
+    "service_code": "seo",
+    "name": "Search visibility",
+    "folders": ["01 Audit", "02 Keywords", "03 Content", "04 Reporting"],
+    "tasks": [
+      {"key": "search_console_access", "title": "Share Search Console access", "required": true},
+      {"key": "target_markets", "title": "Confirm target markets", "required": true},
+      {"key": "priority_topics", "title": "List priority topics", "required": true}
+    ]
+  },
+  {
+    "service_code": "content",
+    "name": "Content program",
+    "folders": ["01 Briefs", "02 Drafts", "03 Approvals", "04 Published"],
+    "tasks": [
+      {"key": "tone_guide", "title": "Provide tone of voice guidance", "required": true},
+      {"key": "content_approver", "title": "Name a content approver", "required": true},
+      {"key": "source_material", "title": "Upload source material", "required": true}
+    ]
+  },
+  {
+    "service_code": "ads",
+    "name": "Paid media",
+    "folders": ["01 Strategy", "02 Creative", "03 Campaigns", "04 Reports"],
+    "tasks": [
+      {"key": "ad_account_access", "title": "Grant ad account access", "required": true},
+      {"key": "campaign_budget", "title": "Confirm campaign budget", "required": true},
+      {"key": "creative_assets", "title": "Upload available creative", "required": true}
+    ]
+  },
+  {
+    "service_code": "analytics",
+    "name": "Analytics setup",
+    "folders": ["01 Measurement", "02 Access", "03 Implementation", "04 QA"],
+    "tasks": [
+      {"key": "analytics_access", "title": "Grant analytics access", "required": true},
+      {"key": "conversion_goals", "title": "Confirm conversion goals", "required": true},
+      {"key": "privacy_contact", "title": "Name a privacy contact", "required": true}
+    ]
+  },
+  {
+    "service_code": "email",
+    "name": "Email lifecycle",
+    "folders": ["01 Audience", "02 Templates", "03 Flows", "04 QA"],
+    "tasks": [
+      {"key": "esp_access", "title": "Grant email platform access", "required": true},
+      {"key": "sender_domain", "title": "Confirm sender domain", "required": true},
+      {"key": "consent_policy", "title": "Provide consent policy", "required": true}
+    ]
+  },
+  {
+    "service_code": "ecommerce",
+    "name": "Commerce launch",
+    "folders": ["01 Catalog", "02 Storefront", "03 Payments", "04 Fulfillment"],
+    "tasks": [
+      {"key": "product_catalog", "title": "Upload product catalog", "required": true},
+      {"key": "shipping_rules", "title": "Confirm shipping rules", "required": true},
+      {"key": "store_access", "title": "Grant store administrator access", "required": true}
+    ]
+  }
+]

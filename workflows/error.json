@@ -1,0 +1,83 @@
+{
+  "id": "CL08ErrorRoute01",
+  "name": "ClientLaunch | Shared execution error",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## ClientLaunch | Shared execution error\nAutomatic execution failures are persisted in the business exception queue.\n\nInput/output contracts: manifest.json.",
+        "height": 170,
+        "width": 450
+      },
+      "id": "1dc30e13-2b50-5edf-805b-e30d88c7d0e7",
+      "name": "Workflow contract",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        120,
+        20
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "93d1f41c-0d07-59d7-96e3-c725266a5e4c",
+      "name": "Catch triggered failure",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        120,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://api:8000/api/workflow-errors",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({workflow_id:$json.workflow?.id,execution_id:$json.execution?.id,node:$json.execution?.lastNodeExecuted,message:$json.execution?.error?.message}) }}"
+      },
+      "id": "61dcdbed-59af-5ed9-aeed-6fb2fb4c66fc",
+      "name": "Queue business exception",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        420,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Catch triggered failure": {
+      "main": [
+        [
+          {
+            "node": "Queue business exception",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "executionTimeout": 300
+  },
+  "staticData": null,
+  "pinData": {},
+  "tags": []
+}

@@ -1,0 +1,50 @@
+{
+  "website:language_versions": [
+    "Our clinic serves English- and Arabic-speaking patients, so visitors should be able to switch the entire site between those two languages.",
+    "Please launch the product pages in Spanish as well as English, with separate copy for each version rather than an automatic translation widget.",
+    "We are opening to customers in Quebec and need a French version of the website alongside the current English one.",
+    "The nonprofit's site must have Persian and English pages, and the language choice should stay consistent as people browse."
+  ],
+  "website:booking_rules": [
+    "Clients should be able to book a 30-minute consultation on weekdays, but they must reserve at least 24 hours in advance.",
+    "For the salon, each stylist has different working days, and customers may cancel without a fee until the evening before their appointment.",
+    "We only accept tour reservations for groups of six or fewer, with two departures each Saturday and no same-day bookings.",
+    "The workshop calendar needs a five-person limit per session and should close registration 48 hours before the class starts."
+  ],
+  "brand:brand_guidelines": [
+    "Please use our navy and warm orange palette, keep the logo on a white background, and avoid playful typefaces.",
+    "Our brand manual specifies the exact colors, heading font, and minimum clear space around the mark; the designs need to follow it.",
+    "The new materials should feel understated and premium, using our existing serif typography and monochrome logo treatments.",
+    "We have approved icons, photography rules, and a conversational writing style that every page and ad should respect."
+  ],
+  "seo:business_locations": [
+    "We provide home cleaning in Austin and Round Rock, so both service areas need to be represented in local search pages.",
+    "The practice has separate offices in Bristol, Bath, and Weston-super-Mare, each with its own address and phone number.",
+    "Please optimize our search presence for the Toronto storefront and the new Mississauga pickup point.",
+    "Our plumbers cover the north and west sides of Chicago, but we do not take jobs outside those neighborhoods."
+  ],
+  "ads:retargeting_audience": [
+    "Show follow-up ads to people who viewed a course page in the last 30 days but never enrolled.",
+    "We want to bring back shoppers who left items in their carts, while excluding anyone who has already completed a purchase.",
+    "The campaign should reach previous site visitors who read at least two articles about mortgages and have not submitted the lead form.",
+    "Can we advertise the next webinar to people who watched most of our introduction video but did not sign up?"
+  ],
+  "analytics:tracking_events": [
+    "We need to measure when visitors submit the quote form, tap the call button, and download the pricing PDF.",
+    "Please record add-to-cart, checkout-start, and completed-order actions so we can see where shoppers drop off.",
+    "For the new landing page, track demo requests and clicks on the calendar link as separate conversions.",
+    "Our reporting should distinguish newsletter signups, account creations, and paid plan upgrades."
+  ],
+  "email:email_segments": [
+    "Send the welcome series to new subscribers, but reserve the loyalty offers for customers who have purchased at least three times.",
+    "We want different newsletters for wholesale buyers and individual shoppers because their pricing and product interests differ.",
+    "Please separate people who attended last year's event from those who registered but never showed up.",
+    "Our reactivation emails should go only to subscribers who have not opened a message or placed an order in six months."
+  ],
+  "ecommerce:catalog_details": [
+    "The store will carry 120 candle products, with scent and jar-size options plus a unique SKU for each variant.",
+    "We need categories for shoes, bags, and accessories, and every item has its own photos, price, and stock count.",
+    "Our wholesale catalog includes case-pack quantities and tiered prices that differ from the retail listings.",
+    "Each tea should list its origin, tasting notes, weight options, and whether it is currently available."
+  ]
+}

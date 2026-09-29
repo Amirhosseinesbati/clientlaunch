@@ -1,0 +1,13 @@
+{
+  "synthetic": true,
+  "seed": 9027,
+  "reference_date": "2026-09-28",
+  "count": 80,
+  "development": 25,
+  "held_out": 55,
+  "id_prefix": "CL-FRESH",
+  "entity_prefix": "FreshExample",
+  "independent_phrase_bank": "evals\\datasets\\fresh_phrase_bank.json",
+  "runtime_input": "requests.jsonl",
+  "labels_not_for_runtime": "ground_truth.jsonl"
+}

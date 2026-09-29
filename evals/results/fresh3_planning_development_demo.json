@@ -1,0 +1,229 @@
+{
+  "status": "complete",
+  "generated_at_utc": "2026-09-28T01:09:59.425077+00:00",
+  "source": "actual /plan route responses",
+  "split": "development",
+  "mode": "demo",
+  "dataset_dir": "evals\\datasets\\fresh3",
+  "attempted": 25,
+  "responded": 25,
+  "errors": [],
+  "counts": {
+    "scope_tp": 22,
+    "scope_fp": 0,
+    "scope_fn": 0,
+    "required_tp": 122,
+    "required_fn": 0
+  },
+  "scope_precision": 1.0,
+  "scope_recall_diagnostic": 1.0,
+  "required_input_recall": 1.0,
+  "per_case": [
+    {
+      "scenario_id": "CL-FRESH3-008",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH3-010",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH3-017",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH3-013",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH3-009",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH3-023",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH3-014",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH3-015",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH3-020",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH3-025",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH3-007",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH3-002",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH3-005",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH3-022",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH3-019",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH3-004",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH3-024",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH3-018",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH3-006",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH3-011",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH3-021",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH3-016",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH3-003",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH3-001",
+      "scope_tp": 1,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    },
+    {
+      "scenario_id": "CL-FRESH3-012",
+      "scope_tp": 0,
+      "scope_fp": 0,
+      "scope_fn": 0,
+      "required_missing": [],
+      "extra_scope": []
+    }
+  ],
+  "not_scored": [
+    "reminder decisions",
+    "recovery outcomes",
+    "connected Drive/Trello/SMTP",
+    "n8n triggered executions"
+  ]
+}

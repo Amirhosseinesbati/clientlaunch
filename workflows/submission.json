@@ -1,0 +1,138 @@
+{
+  "id": "CL08Submission01",
+  "name": "ClientLaunch | Process client intake",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## ClientLaunch | Process client intake\nStored client submission → idempotent checklist processing → changed task cards.\n\nInput/output contracts: manifest.json.",
+        "height": 170,
+        "width": 450
+      },
+      "id": "64a45801-f352-5c7b-bbc7-7a96df316d80",
+      "name": "Workflow contract",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        120,
+        20
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "clientlaunch/submission",
+        "responseMode": "onReceived",
+        "options": {
+          "responseCode": 202
+        },
+        "authentication": "headerAuth"
+      },
+      "id": "0847e897-6501-569a-94bf-7feecb020529",
+      "name": "Receive stored submission",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        120,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      },
+      "webhookId": "2033bba4-e947-51bb-b866-e331d345a22b"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://api:8000/api/client-submissions/' + $json.body.submission_id + '/process' }}",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({}) }}"
+      },
+      "id": "c1b230bc-b0e2-5756-81ca-b002ce58e633",
+      "name": "Apply checklist updates",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        400,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://n8n:5678/webhook/clientlaunch/task-sync",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({onboarding_id:$json.onboarding_id}) }}"
+      },
+      "id": "44c307ab-8b3e-5087-98bb-c2d7545a0d1a",
+      "name": "Trigger changed Trello tasks",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        680,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Receive stored submission": {
+      "main": [
+        [
+          {
+            "node": "Apply checklist updates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apply checklist updates": {
+      "main": [
+        [
+          {
+            "node": "Trigger changed Trello tasks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "executionTimeout": 300,
+    "errorWorkflow": "CL08ErrorRoute01"
+  },
+  "staticData": null,
+  "pinData": {},
+  "tags": []
+}

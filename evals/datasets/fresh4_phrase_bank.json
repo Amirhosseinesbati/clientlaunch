@@ -1,0 +1,50 @@
+{
+  "website:language_versions": [
+    "Our website needs separate English, Persian, and Arabic versions for visitors in each market.",
+    "Please make the new site available in the languages our international customers use.",
+    "We want visitors to switch between localized versions of the website from any page.",
+    "The product pages and navigation should be translated for each language we support."
+  ],
+  "website:booking_rules": [
+    "Customers should be able to reserve appointments online according to our staff schedules and cancellation policy.",
+    "We need a booking flow that only offers valid time slots for each service.",
+    "Please add online reservations with our advance notice and rescheduling rules built in.",
+    "The site should prevent double bookings and apply the correct capacity limits to each session."
+  ],
+  "brand:brand_guidelines": [
+    "The redesign should follow our existing brand guidelines for colors, typography, and logo use.",
+    "Please keep every campaign asset consistent with our approved visual identity.",
+    "We have a brand style guide that the new website and graphics must follow.",
+    "All creative work needs to use the approved logo variants and brand voice."
+  ],
+  "seo:business_locations": [
+    "We want local search visibility for every branch of our business.",
+    "Please optimize the site for the cities where our clinics operate.",
+    "Our SEO plan should include location pages for each physical store.",
+    "Customers search for our services near their neighborhood, so each service area needs a local search presence."
+  ],
+  "ads:retargeting_audience": [
+    "We want ads that bring back visitors who viewed a product but left without buying.",
+    "Please retarget people who started checkout while excluding customers who already completed a purchase.",
+    "Our paid campaign should reach previous site visitors based on the pages they browsed.",
+    "We need a remarketing audience for leads who opened the pricing page but did not submit the form."
+  ],
+  "analytics:tracking_events": [
+    "We need analytics to record when visitors submit a contact form or click the call button.",
+    "Please track key actions such as add-to-cart, checkout start, and completed purchase.",
+    "Our dashboard should show how often users book a consultation from the website.",
+    "We want to measure downloads, video plays, and other meaningful interactions as events."
+  ],
+  "email:email_segments": [
+    "Our email campaigns should send different messages to new leads and existing customers.",
+    "Please organize subscribers into groups based on their purchase history and interests.",
+    "We want separate newsletter journeys for wholesale buyers and individual shoppers.",
+    "The email plan should distinguish inactive subscribers from our most loyal customers."
+  ],
+  "ecommerce:catalog_details": [
+    "The online store needs product listings with accurate variants, prices, and stock levels.",
+    "Please import our catalog so shoppers can choose the right size and color for each item.",
+    "We need every product page populated with descriptions, images, and SKU information.",
+    "Our shop should display current product categories and inventory for the full range."
+  ]
+}

@@ -1,0 +1,406 @@
+{
+  "n8n_version": "2.40.7",
+  "edition": "Community",
+  "import_order": [
+    "drive",
+    "trello",
+    "error",
+    "task_sync",
+    "intake",
+    "provision",
+    "submission",
+    "reminder",
+    "recovery",
+    "dispatch_sweeper"
+  ],
+  "credential_requirements": {
+    "CL08InternalAuth": "httpHeaderAuth: X-Internal-Key (generated locally)",
+    "__GOOGLE_DRIVE_CREDENTIAL_ID__": "Google Drive OAuth2; connected mode only",
+    "__TRELLO_CREDENTIAL_ID__": "Trello API; connected mode only",
+    "__SMTP_CREDENTIAL_ID__": "Authorized SMTP; connected mode only"
+  },
+  "workflows": [
+    {
+      "file": "drive.json",
+      "id": "CL08DriveFolder01",
+      "depends_on": [],
+      "input": "claim response",
+      "output": "n8n execution record and persisted API state",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "onboarding_id",
+          "request_payload",
+          "idempotency_key",
+          "connector_mode"
+        ],
+        "properties": {
+          "onboarding_id": {
+            "type": "string"
+          },
+          "request_payload": {
+            "type": "object"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "connector_mode": {
+            "enum": [
+              "demo",
+              "connected"
+            ]
+          }
+        }
+      },
+      "output_schema": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "external_id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "file": "trello.json",
+      "id": "CL08TrelloBoard1",
+      "depends_on": [],
+      "input": "claim response",
+      "output": "n8n execution record and persisted API state",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "onboarding_id",
+          "request_payload",
+          "idempotency_key",
+          "connector_mode"
+        ],
+        "properties": {
+          "onboarding_id": {
+            "type": "string"
+          },
+          "request_payload": {
+            "type": "object"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "connector_mode": {
+            "enum": [
+              "demo",
+              "connected"
+            ]
+          }
+        }
+      },
+      "output_schema": {
+        "type": "object",
+        "required": [
+          "name",
+          "todo_list_id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "external_id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "todo_list_id": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "file": "error.json",
+      "id": "CL08ErrorRoute01",
+      "depends_on": [],
+      "input": "n8n error payload",
+      "output": "n8n execution record and persisted API state",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "execution",
+          "workflow"
+        ],
+        "properties": {
+          "execution": {
+            "type": "object"
+          },
+          "workflow": {
+            "type": "object"
+          }
+        }
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "file": "task_sync.json",
+      "id": "CL08TaskSync001",
+      "depends_on": [
+        "CL08ErrorRoute01"
+      ],
+      "input": "{onboarding_id}",
+      "output": "n8n execution record and persisted API state",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "onboarding_id"
+        ],
+        "properties": {
+          "onboarding_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "file": "intake.json",
+      "id": "CL08DealIntake01",
+      "depends_on": [
+        "CL08ErrorRoute01"
+      ],
+      "input": "signed won-deal JSON",
+      "output": "n8n execution record and persisted API state",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "workspace_slug",
+          "event_id",
+          "external_deal_id",
+          "client",
+          "services",
+          "approved_scope",
+          "proposal_text",
+          "account_owner_email"
+        ],
+        "properties": {
+          "workspace_slug": {
+            "type": "string"
+          },
+          "event_id": {
+            "type": "string"
+          },
+          "external_deal_id": {
+            "type": "string"
+          },
+          "client": {
+            "type": "object"
+          },
+          "services": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "approved_scope": {
+            "type": "string"
+          },
+          "proposal_text": {
+            "type": "string"
+          },
+          "timeline": {
+            "type": "object"
+          },
+          "account_owner_email": {
+            "type": "string"
+          }
+        }
+      },
+      "output_schema": {
+        "type": "object",
+        "required": [
+          "accepted",
+          "onboarding_id",
+          "duplicate"
+        ],
+        "properties": {
+          "accepted": {
+            "type": "boolean"
+          },
+          "onboarding_id": {
+            "type": "string"
+          },
+          "duplicate": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    {
+      "file": "provision.json",
+      "id": "CL08Provision001",
+      "depends_on": [
+        "CL08DriveFolder01",
+        "CL08TrelloBoard1",
+        "CL08TaskSync001",
+        "CL08ErrorRoute01"
+      ],
+      "input": "{onboarding_id}",
+      "output": "n8n execution record and persisted API state",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "onboarding_id"
+        ],
+        "properties": {
+          "onboarding_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "file": "submission.json",
+      "id": "CL08Submission01",
+      "depends_on": [
+        "CL08TaskSync001",
+        "CL08ErrorRoute01"
+      ],
+      "input": "{submission_id}",
+      "output": "n8n execution record and persisted API state",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "submission_id"
+        ],
+        "properties": {
+          "submission_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "file": "reminder.json",
+      "id": "CL08Reminder001",
+      "depends_on": [
+        "CL08ErrorRoute01"
+      ],
+      "input": "daily schedule or authenticated POST /webhook/clientlaunch/reminder-run with {}",
+      "output": "n8n execution record and persisted API state",
+      "input_schema": {
+        "type": "object",
+        "properties": {}
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "file": "recovery.json",
+      "id": "CL08Recovery0001",
+      "depends_on": [
+        "CL08Provision001",
+        "CL08ErrorRoute01"
+      ],
+      "input": "{onboarding_id}",
+      "output": "n8n execution record and persisted API state",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "onboarding_id"
+        ],
+        "properties": {
+          "onboarding_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "file": "dispatch_sweeper.json",
+      "id": "CL08DispatchSweep",
+      "depends_on": [
+        "CL08Provision001",
+        "CL08Submission01",
+        "CL08Recovery0001",
+        "CL08ErrorRoute01"
+      ],
+      "input": "schedule",
+      "output": "n8n execution record and persisted API state",
+      "input_schema": {
+        "type": "object",
+        "properties": {}
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  ]
+}

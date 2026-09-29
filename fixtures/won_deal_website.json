@@ -1,0 +1,17 @@
+{
+  "workspace_slug": "northstar",
+  "event_id": "cl-demo-website-001",
+  "external_deal_id": "qf-demo-website-001",
+  "client": {
+    "name": "Willow Harbor Studio",
+    "email": "hello@willowharbor.example.com"
+  },
+  "services": ["website"],
+  "approved_scope": "Build a bilingual website with an online booking flow for Willow Harbor Studio. The client will provide its existing logo, website copy, domain access, and booking rules before launch.",
+  "proposal_text": "Approved website project for Willow Harbor Studio: bilingual pages and an online booking flow. Delivery starts after brand assets, website copy, domain access, booking rules, and kickoff availability are supplied. Changes to commerce or advertising require a separate approval.",
+  "timeline": {
+    "target_kickoff": "2026-10-05",
+    "target_launch": "2026-11-16"
+  },
+  "account_owner_email": "operator@northstar.example.com"
+}

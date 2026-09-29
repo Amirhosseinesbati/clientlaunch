@@ -1,0 +1,182 @@
+{
+  "id": "CL08Recovery0001",
+  "name": "ClientLaunch | Reconcile provisioning",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## ClientLaunch | Reconcile provisioning\nLedger reconciliation → resume remaining steps after confirmed outcomes or retry known failed steps. Unknown outcomes stay paused for review.\n\nInput/output contracts: manifest.json.",
+        "height": 170,
+        "width": 450
+      },
+      "id": "17143728-355d-5dca-a6e9-2c6d6a664ef2",
+      "name": "Workflow contract",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        120,
+        20
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "clientlaunch/recover",
+        "responseMode": "onReceived",
+        "options": {
+          "responseCode": 202
+        },
+        "authentication": "headerAuth"
+      },
+      "id": "438532f0-7254-5955-81cb-18d3414a250c",
+      "name": "Receive recovery request",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        120,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      },
+      "webhookId": "a767aded-f0e0-58ca-8914-4ab00d3c9b03"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://api:8000/api/onboardings/' + $json.body.onboarding_id + '/recover' }}",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({}) }}"
+      },
+      "id": "88b5a727-d773-57cb-976b-c47e642a4455",
+      "name": "Evaluate operation ledger",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        420,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "a2cb7b04-4413-5302-bdc4-dda6df8f5161",
+              "leftValue": "={{ $json.resume_needed === true }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        }
+      },
+      "id": "449819dc-f9d2-5bc6-b3e7-cc219c4f4335",
+      "name": "Safe to resume remaining steps",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        710,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://n8n:5678/webhook/clientlaunch/provision",
+        "options": {
+          "timeout": 30000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({onboarding_id:$json.onboarding_id}) }}"
+      },
+      "id": "28a8cf1c-449c-54da-9376-52a1f6aad2f2",
+      "name": "Resume provisioning",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1000,
+        210
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CL08InternalAuth",
+          "name": "ClientLaunch internal API"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Receive recovery request": {
+      "main": [
+        [
+          {
+            "node": "Evaluate operation ledger",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluate operation ledger": {
+      "main": [
+        [
+          {
+            "node": "Safe to resume remaining steps",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Safe to resume remaining steps": {
+      "main": [
+        [
+          {
+            "node": "Resume provisioning",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "executionTimeout": 300,
+    "errorWorkflow": "CL08ErrorRoute01"
+  },
+  "staticData": null,
+  "pinData": {},
+  "tags": []
+}
