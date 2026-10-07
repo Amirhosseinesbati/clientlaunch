@@ -1,0 +1,35 @@
+{
+  "scope": "Six representative local synthetic screenshots. Full source QA: 54 appearance checks plus 26 interaction journey checks; no live n8n/provider/mail acceptance.",
+  "files": [
+    {
+      "file": "workbench-dark-desktop.png",
+      "bytes": 110025,
+      "sha256": "65b697789ab1bec9ab7f2d1ddec447591f70ed96980e09dd7e240e6006e05e6e"
+    },
+    {
+      "file": "workbench-light-desktop.png",
+      "bytes": 110649,
+      "sha256": "60226a689fbfc33088a7428ecf0421b48b845277029fb7c814ee151b4425fb83"
+    },
+    {
+      "file": "queue-dark-mobile.png",
+      "bytes": 36897,
+      "sha256": "308656d9876a01e54c190f9ddab1228d51a22e043abe849367a186bb8ac4debe"
+    },
+    {
+      "file": "queue-light-mobile.png",
+      "bytes": 36504,
+      "sha256": "26b7682b7427806acf15a0eeb76f24037343cdd2b3e7de8685afc3e80cfdc7a5"
+    },
+    {
+      "file": "client-dark-mobile.png",
+      "bytes": 40867,
+      "sha256": "a9e4c5c8c37e17632a51a46c2498341e93e72001a732e49150028a8d43ff029c"
+    },
+    {
+      "file": "client-light-mobile.png",
+      "bytes": 40644,
+      "sha256": "c95a2c33cea9a317e15fefe2bb6c8c2800b319256539108a9029fcffdd66e35d"
+    }
+  ]
+}

@@ -22,10 +22,10 @@ from .models import (
     Approval, Asset, ChecklistItem, Client, ClientSession, EventReceipt, ExternalResource,
     HandoffSummary, IntakeSubmission, Onboarding, OnboardingTemplateVersion, OutboxEmail,
     PlanRevision, PortalInvite, ProjectFolder, ProvisioningOperation, ReminderTask, SimResource, TimelineEvent,
-    TaskCard, User, UserSession, WonDeal, WorkflowDispatch, WorkflowException, Workspace, utcnow,
+    TaskCard, User, UserSession, WonDeal, WorkflowDispatch, WorkflowException, Workspace, WorkspaceBrand, utcnow,
 )
 from .schemas import (
-    ApprovalDecision, ChecklistEdit, HandoffRequest, IntakeRequest, LifecycleAction, LoginRequest, PlanDraft,
+    ApprovalDecision, BrandSettingsEdit, TemplateEdit, ChecklistEdit, HandoffRequest, IntakeRequest, LifecycleAction, LoginRequest, PlanDraft,
     OutboxAck, PortalExchange, ProvisionClaim, ProvisionComplete, RecoverRequest, ReminderApproval, TaskCardAck, TaskCardReconcile,
     ReminderDispatch, ReminderEvaluate, SimCardCreate, SimCardUpdate, SimCreate, SimFaultRequest, SimMail, TaskCardClaim, WelcomeRequest, WonDealEvent, WorkflowErrorReport,
 )
@@ -35,7 +35,7 @@ from .security import (
     operator_actor, operator_writer, portal_token_for, verify_password, verify_webhook,
 )
 from .services import (
-    add_event, canonical_hash, client_detail, detail, evaluate_reminders, iso, list_item,
+    add_event, brand_settings, canonical_hash, client_detail, detail, evaluate_reminders, iso, list_item,
     progress, refresh_readiness, require_onboarding,
 )
 
@@ -309,6 +309,65 @@ def logout(response: Response, actor: OperatorActor = Depends(operator_actor), d
     db.commit()
     response.delete_cookie("clientlaunch_session", path="/api")
     return {"status": "signed_out"}
+
+
+@app.get("/api/workspace/brand")
+def get_brand(actor: OperatorActor = Depends(operator_actor), db: Session = Depends(get_db)) -> dict:
+    return brand_settings(db, actor.user.workspace_id)
+
+
+@app.patch("/api/workspace/brand")
+def edit_brand(body: BrandSettingsEdit, actor: OperatorActor = Depends(operator_writer), db: Session = Depends(get_db)) -> dict:
+    workspace_id = actor.user.workspace_id
+    values = body.model_dump(mode="json", exclude={"expected_version"})
+    values["version"] = body.expected_version + 1
+    if body.expected_version == 0:
+        db.add(WorkspaceBrand(workspace_id=workspace_id, **values))
+    else:
+        changed = db.execute(update(WorkspaceBrand).where(WorkspaceBrand.workspace_id == workspace_id,
+                            WorkspaceBrand.version == body.expected_version).values(**values))
+        if changed.rowcount != 1:
+            raise HTTPException(status_code=409, detail="Brand settings changed. Reload before saving your edits.")
+    try:
+        db.commit()
+    except IntegrityError as exc:
+        db.rollback()
+        raise HTTPException(status_code=409, detail="Brand settings changed. Reload before saving your edits.") from exc
+    return brand_settings(db, workspace_id)
+
+
+def _template_json(template: OnboardingTemplateVersion) -> dict:
+    return {key: getattr(template, key) for key in ("id", "service_code", "version", "name", "description", "checklist", "folder_blueprint", "board_blueprint")}
+
+
+@app.get("/api/templates")
+def get_templates(actor: OperatorActor = Depends(operator_actor), db: Session = Depends(get_db)) -> dict:
+    templates = db.scalars(select(OnboardingTemplateVersion).where(OnboardingTemplateVersion.workspace_id == actor.user.workspace_id,
+                           OnboardingTemplateVersion.active.is_(True)).order_by(OnboardingTemplateVersion.name)).all()
+    return {"items": [_template_json(template) for template in templates]}
+
+
+@app.patch("/api/templates/{service_code}")
+def edit_template(service_code: str, body: TemplateEdit, actor: OperatorActor = Depends(operator_writer), db: Session = Depends(get_db)) -> dict:
+    current = db.scalar(select(OnboardingTemplateVersion).where(OnboardingTemplateVersion.workspace_id == actor.user.workspace_id,
+                        OnboardingTemplateVersion.service_code == service_code, OnboardingTemplateVersion.active.is_(True))
+                        .order_by(OnboardingTemplateVersion.version.desc()))
+    if not current:
+        raise HTTPException(status_code=404, detail="Service template not found")
+    if current.version != body.expected_version:
+        raise HTTPException(status_code=409, detail="Template changed. Reload before saving your edits.")
+    template = OnboardingTemplateVersion(workspace_id=actor.user.workspace_id, service_code=service_code,
+                version=current.version + 1, name=body.name, description=body.description,
+                checklist=[item.model_dump() for item in body.checklist], folder_blueprint=body.folder_blueprint,
+                board_blueprint=list(current.board_blueprint), active=True)
+    current.active = False
+    db.add(template)
+    try:
+        db.commit()
+    except IntegrityError as exc:
+        db.rollback()
+        raise HTTPException(status_code=409, detail="Template changed. Reload before saving your edits.") from exc
+    return _template_json(template)
 
 
 @app.post("/api/events/won-deal")

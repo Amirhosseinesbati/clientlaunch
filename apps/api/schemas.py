@@ -6,6 +6,50 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 
+class BrandSettingsEdit(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+    agency_name: str = Field(min_length=1, max_length=160)
+    accent: str = Field(pattern=r"^#[0-9a-fA-F]{6}$")
+    welcome_heading: str = Field(min_length=1, max_length=160)
+    welcome_message: str = Field(min_length=1, max_length=3000)
+    support_email: EmailStr | None = None
+    expected_version: int = Field(ge=0)
+
+
+class TemplateChecklistEdit(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+    key: str = Field(pattern=r"^[a-z][a-z0-9_]{0,79}$")
+    title: str = Field(min_length=1, max_length=240)
+    description: str = Field(default="", max_length=3000)
+    required: bool = True
+
+
+class TemplateEdit(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+    expected_version: int = Field(ge=1)
+    name: str = Field(min_length=1, max_length=160)
+    description: str = Field(default="", max_length=3000)
+    checklist: list[TemplateChecklistEdit] = Field(min_length=1, max_length=40)
+    folder_blueprint: list[str] = Field(min_length=1, max_length=30)
+
+    @field_validator("checklist")
+    @classmethod
+    def distinct_keys(cls, items):
+        if len({item.key for item in items}) != len(items):
+            raise ValueError("Checklist keys must be unique")
+        return items
+
+    @field_validator("folder_blueprint")
+    @classmethod
+    def valid_folders(cls, folders):
+        names = [name.strip() for name in folders]
+        if any(not name or len(name) > 240 or "/" in name or "\\" in name for name in names):
+            raise ValueError("Use folder names of 1–240 characters without slashes")
+        if len({name.casefold() for name in names}) != len(names):
+            raise ValueError("Folder names must be unique")
+        return names
+
+
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str = Field(min_length=1)

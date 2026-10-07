@@ -72,21 +72,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/events/won-deal": {
+    "/api/workspace/brand": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Get Brand */
+        get: operations["get_brand_api_workspace_brand_get"];
         put?: never;
-        /** Receive Won Deal */
-        post: operations["receive_won_deal_api_events_won_deal_post"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
-        patch?: never;
+        /** Edit Brand */
+        patch: operations["edit_brand_api_workspace_brand_patch"];
         trace?: never;
     };
     "/api/templates": {
@@ -100,6 +101,40 @@ export interface paths {
         get: operations["templates_api_templates_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/templates/{service_code}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Edit Template */
+        patch: operations["edit_template_api_templates__service_code__patch"];
+        trace?: never;
+    };
+    "/api/events/won-deal": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Receive Won Deal */
+        post: operations["receive_won_deal_api_events_won_deal_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -191,6 +226,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/workflow-dispatches/{dispatch_id}/attempt": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Record Dispatch Attempt */
+        post: operations["record_dispatch_attempt_api_workflow_dispatches__dispatch_id__attempt_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/workflow-dispatches/{dispatch_id}/ack": {
         parameters: {
             query?: never;
@@ -219,6 +271,23 @@ export interface paths {
         put?: never;
         /** Claim Provisioning */
         post: operations["claim_provisioning_api_onboardings__onboarding_id__provisioning_claim_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/onboardings/{onboarding_id}/provisioning/folders/next": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Next Project Folder */
+        get: operations["next_project_folder_api_onboardings__onboarding_id__provisioning_folders_next_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -321,6 +390,91 @@ export interface paths {
         put?: never;
         /** Submit Intake */
         post: operations["submit_intake_api_client_submissions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/client-submissions/{submission_id}/process": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Process Submission */
+        post: operations["process_submission_api_client_submissions__submission_id__process_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/onboardings/{onboarding_id}/task-sync/pending": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Task Sync Pending */
+        get: operations["task_sync_pending_api_onboardings__onboarding_id__task_sync_pending_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/onboardings/{onboarding_id}/task-sync/{operation_id}/claim": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Task Sync Claim */
+        post: operations["task_sync_claim_api_onboardings__onboarding_id__task_sync__operation_id__claim_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/onboardings/{onboarding_id}/task-sync/reconcile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reconcile Task Cards */
+        post: operations["reconcile_task_cards_api_onboardings__onboarding_id__task_sync_reconcile_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/onboardings/{onboarding_id}/task-sync/{operation_id}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Task Sync Complete */
+        post: operations["task_sync_complete_api_onboardings__onboarding_id__task_sync__operation_id__complete_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -531,6 +685,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/sim/faults/next": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Arm Simulator Fault */
+        post: operations["arm_simulator_fault_sim_faults_next_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/sim/trello/boards": {
         parameters: {
             query?: never;
@@ -563,6 +734,40 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/sim/trello/cards": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sim Create Card */
+        post: operations["sim_create_card_sim_trello_cards_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sim/trello/cards/{external_card_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Sim Update Card */
+        patch: operations["sim_update_card_sim_trello_cards__external_card_id__patch"];
         trace?: never;
     };
     "/sim/smtp/send": {
@@ -616,6 +821,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/workflow-errors/unattributed": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Unattributed Workflow Errors
+         * @description Keep shared n8n errors inspectable without exposing them across workspaces.
+         */
+        get: operations["list_unattributed_workflow_errors_api_workflow_errors_unattributed_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -640,6 +865,21 @@ export interface components {
             file: string;
             /** Checklist Item Id */
             checklist_item_id: string;
+        };
+        /** BrandSettingsEdit */
+        BrandSettingsEdit: {
+            /** Agency Name */
+            agency_name: string;
+            /** Accent */
+            accent: string;
+            /** Welcome Heading */
+            welcome_heading: string;
+            /** Welcome Message */
+            welcome_message: string;
+            /** Support Email */
+            support_email?: string | null;
+            /** Expected Version */
+            expected_version: number;
         };
         /** ChecklistEdit */
         ChecklistEdit: {
@@ -766,7 +1006,9 @@ export interface components {
              * Action
              * @enum {string}
              */
-            action: "create_folder" | "create_board";
+            action: "create_folder" | "create_child_folder" | "create_board";
+            /** Folder Id */
+            folder_id?: string | null;
             /** Request Payload */
             request_payload?: {
                 [key: string]: unknown;
@@ -786,6 +1028,8 @@ export interface components {
             url?: string | null;
             /** Name */
             name?: string | null;
+            /** Todo List Id */
+            todo_list_id?: string | null;
             /** Preview */
             preview?: {
                 [key: string]: unknown;
@@ -796,14 +1040,17 @@ export interface components {
         /** RecoverRequest */
         RecoverRequest: {
             /** Operation Id */
-            operation_id: string;
-            /**
-             * Decision
-             * @enum {string}
-             */
-            decision: "retry" | "reconcile" | "compensate";
+            operation_id?: string | null;
+            /** Decision */
+            decision?: ("retry" | "reconcile" | "compensate") | null;
             /** External Id */
             external_id?: string | null;
+            /** Todo List Id */
+            todo_list_id?: string | null;
+            /** Url */
+            url?: string | null;
+            /** Name */
+            name?: string | null;
             /**
              * Confirmed Absent
              * @default false
@@ -830,6 +1077,37 @@ export interface components {
             /** Onboarding Id */
             onboarding_id?: string | null;
         };
+        /** SimCardCreate */
+        SimCardCreate: {
+            /** Board Id */
+            board_id: string;
+            /** Name */
+            name: string;
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+            /** Due Date */
+            due_date?: string | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "open" | "completed" | "needs_review";
+            /** Idempotency Key */
+            idempotency_key: string;
+        };
+        /** SimCardUpdate */
+        SimCardUpdate: {
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "open" | "completed" | "needs_review";
+            /** Idempotency Key */
+            idempotency_key: string;
+        };
         /** SimCreate */
         SimCreate: {
             /** Onboarding Id */
@@ -851,6 +1129,21 @@ export interface components {
              */
             simulate_timeout: boolean;
         };
+        /** SimFaultRequest */
+        SimFaultRequest: {
+            /** Onboarding Id */
+            onboarding_id: string;
+            /**
+             * System
+             * @enum {string}
+             */
+            system: "drive" | "trello";
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "failure" | "timeout";
+        };
         /** SimMail */
         SimMail: {
             /** Onboarding Id */
@@ -864,6 +1157,73 @@ export interface components {
             subject: string;
             /** Body */
             body: string;
+        };
+        /** TaskCardAck */
+        TaskCardAck: {
+            /** External Id */
+            external_id: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "open" | "completed" | "needs_review";
+        };
+        /** TaskCardClaim */
+        TaskCardClaim: {
+            /**
+             * Expected Status
+             * @enum {string}
+             */
+            expected_status: "open" | "completed" | "needs_review";
+            /** Expected Idempotency Key */
+            expected_idempotency_key: string;
+        };
+        /** TaskCardReconcile */
+        TaskCardReconcile: {
+            /** Operation Id */
+            operation_id?: string | null;
+            /** External Id */
+            external_id?: string | null;
+            /** Status */
+            status?: ("open" | "completed" | "needs_review") | null;
+            /**
+             * Confirmed Absent
+             * @default false
+             */
+            confirmed_absent: boolean;
+        };
+        /** TemplateChecklistEdit */
+        TemplateChecklistEdit: {
+            /** Key */
+            key: string;
+            /** Title */
+            title: string;
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+            /**
+             * Required
+             * @default true
+             */
+            required: boolean;
+        };
+        /** TemplateEdit */
+        TemplateEdit: {
+            /** Expected Version */
+            expected_version: number;
+            /** Name */
+            name: string;
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+            /** Checklist */
+            checklist: components["schemas"]["TemplateChecklistEdit"][];
+            /** Folder Blueprint */
+            folder_blueprint: string[];
         };
         /** ValidationError */
         ValidationError: {
@@ -881,25 +1241,22 @@ export interface components {
         /** WelcomeRequest */
         WelcomeRequest: {
             /** Subject */
-            subject: string;
+            subject?: string | null;
             /** Body */
-            body: string;
-            /**
-             * Recipient
-             * Format: email
-             */
-            recipient: string;
+            body?: string | null;
+            /** Recipient */
+            recipient?: string | null;
         };
         /** WorkflowErrorReport */
         WorkflowErrorReport: {
             /** Workflow Id */
-            workflow_id: string;
+            workflow_id?: string | null;
             /** Execution Id */
-            execution_id: string;
+            execution_id?: string | null;
             /** Node */
-            node: string;
+            node?: string | null;
             /** Message */
-            message: string;
+            message?: string | null;
             /** Onboarding Id */
             onboarding_id?: string | null;
         };
@@ -1013,7 +1370,7 @@ export interface operations {
             };
         };
     };
-    receive_won_deal_api_events_won_deal_post: {
+    get_brand_api_workspace_brand_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -1035,7 +1392,101 @@ export interface operations {
             };
         };
     };
+    edit_brand_api_workspace_brand_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BrandSettingsEdit"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     templates_api_templates_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    edit_template_api_templates__service_code__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                service_code: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TemplateEdit"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    receive_won_deal_api_events_won_deal_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -1221,6 +1672,41 @@ export interface operations {
             };
         };
     };
+    record_dispatch_attempt_api_workflow_dispatches__dispatch_id__attempt_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-internal-key"?: string | null;
+            };
+            path: {
+                dispatch_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     acknowledge_dispatch_api_workflow_dispatches__dispatch_id__ack_post: {
         parameters: {
             query?: never;
@@ -1272,6 +1758,41 @@ export interface operations {
                 "application/json": components["schemas"]["ProvisionClaim"];
             };
         };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    next_project_folder_api_onboardings__onboarding_id__provisioning_folders_next_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-internal-key"?: string | null;
+            };
+            path: {
+                onboarding_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description Successful Response */
             200: {
@@ -1480,6 +2001,193 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["IntakeRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    process_submission_api_client_submissions__submission_id__process_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-internal-key"?: string | null;
+            };
+            path: {
+                submission_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    task_sync_pending_api_onboardings__onboarding_id__task_sync_pending_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-internal-key"?: string | null;
+            };
+            path: {
+                onboarding_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    }[];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    task_sync_claim_api_onboardings__onboarding_id__task_sync__operation_id__claim_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-internal-key"?: string | null;
+            };
+            path: {
+                onboarding_id: string;
+                operation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TaskCardClaim"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reconcile_task_cards_api_onboardings__onboarding_id__task_sync_reconcile_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                onboarding_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TaskCardReconcile"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    task_sync_complete_api_onboardings__onboarding_id__task_sync__operation_id__complete_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-internal-key"?: string | null;
+            };
+            path: {
+                onboarding_id: string;
+                operation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TaskCardAck"];
             };
         };
         responses: {
@@ -1943,6 +2651,43 @@ export interface operations {
             };
         };
     };
+    arm_simulator_fault_sim_faults_next_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-internal-key"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SimFaultRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     sim_trello_board_sim_trello_boards_post: {
         parameters: {
             query?: never;
@@ -1994,6 +2739,84 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    sim_create_card_sim_trello_cards_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "Idempotency-Key"?: string | null;
+                "x-internal-key"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SimCardCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    sim_update_card_sim_trello_cards__external_card_id__patch: {
+        parameters: {
+            query?: never;
+            header?: {
+                "Idempotency-Key"?: string | null;
+                "x-internal-key"?: string | null;
+            };
+            path: {
+                external_card_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SimCardUpdate"];
+            };
+        };
         responses: {
             /** @description Successful Response */
             200: {
@@ -2110,6 +2933,39 @@ export interface operations {
                     "application/json": {
                         [key: string]: unknown;
                     };
+                };
+            };
+        };
+    };
+    list_unattributed_workflow_errors_api_workflow_errors_unattributed_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-internal-key"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

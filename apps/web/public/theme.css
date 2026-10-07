@@ -1,0 +1,20 @@
+/* Explicit semantic tokens for both themes. Brand/document colors remain intentional. */
+:root, :root[data-theme="dark"] {
+  color-scheme: dark;
+  --canvas:#0b1018; --surface:#111923; --surface-raised:#17212d; --surface-hover:#1d2a37; --sidebar:#0d141d;
+  --text:#e8edf3; --text-secondary:#abb8c7; --text-muted:#8b9bb0; --line:#283444; --line-strong:#3e5166;
+  --accent:#78dbc4; --accent-hover:#a0ebda; --accent-soft:#18392f; --on-accent:#09251e;
+  --success:#88d7ab; --success-soft:#183228; --warning:#efc082; --warning-soft:#382c1c; --danger:#f3a09c; --danger-soft:#3a2027;
+  --info:#9bbded; --info-soft:#1c2e45; --focus:#97e4d4; --scrim:rgba(3,8,14,.78); --shadow:0 18px 52px rgba(0,0,0,.26);
+  --document-bg:#fff; --document-text:#243442;
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --canvas:#f4f7fa; --surface:#fff; --surface-raised:#f0f4f7; --surface-hover:#e8eef3; --sidebar:#f9fbfc;
+  --text:#172738; --text-secondary:#526277; --text-muted:#64758a; --line:#dce4ec; --line-strong:#a8bacb;
+  --accent:#116b57; --accent-hover:#084d40; --accent-soft:#e0f3eb; --on-accent:#fff;
+  --success:#246947; --success-soft:#e4f3e9; --warning:#88601b; --warning-soft:#fbf0d9; --danger:#a73b48; --danger-soft:#fbe7eb;
+  --info:#365f9d; --info-soft:#e8effb; --focus:#116b57; --scrim:rgba(14,28,43,.42); --shadow:0 18px 52px rgba(31,52,71,.12);
+  --document-bg:#fff; --document-text:#243442;
+}
+html,body { background:var(--canvas); color:var(--text); }

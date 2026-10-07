@@ -8,6 +8,7 @@ export const contractRoutes = [
   '/api/onboardings/{onboarding_id}/handoff', '/api/onboardings/{onboarding_id}/checklist/{item_id}',
   '/api/onboardings/{onboarding_id}/state', '/api/reminders/{reminder_id}/approval',
   '/api/client/exchange', '/api/client/onboarding', '/api/client/submissions', '/api/client/assets',
+  '/api/workspace/brand', '/api/templates', '/api/templates/{service_code}',
 ] as const satisfies readonly (keyof paths)[];
 
 export class ApiError extends Error {
@@ -42,10 +43,13 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
       method: options.method ?? 'GET',
       headers,
       credentials: 'include',
+      signal: AbortSignal.timeout(20_000),
       body: options.formData ?? (options.body === undefined ? undefined : JSON.stringify(options.body)),
     });
   } catch {
-    throw new ApiError('Cannot reach ClientLaunch. Check that the API is running and try again.', 0);
+    throw new ApiError(options.method && options.method !== 'GET'
+      ? 'The connection ended before the result was confirmed. Your edits are retained. Refresh the project to check whether it was received before trying again.'
+      : 'Cannot reach ClientLaunch. Check that the API is running and try again.', 0);
   }
 
   const contentType = response.headers.get('content-type') ?? '';
@@ -81,7 +85,17 @@ export type AuthSession = {
   expires_at?: string;
 };
 
-export type Health = { status?: string; mode?: 'DEMO' | 'CONNECTED' | string };
+export type Health = { status?: string; mode?: 'DEMO' | 'CONNECTED' | string; connector_mode?: string; fixture?: boolean };
+
+export type BrandSettings = {
+  agency_name: string; accent: string; welcome_heading: string; welcome_message: string;
+  support_email: string | null; version: number;
+};
+export type ServiceTemplate = {
+  id: string; service_code: string; version: number; name: string; description: string;
+  checklist: { key: string; title: string; description?: string; required: boolean }[];
+  folder_blueprint: string[]; board_blueprint: string[];
+};
 
 export type OnboardingSummary = {
   id: string;
@@ -237,7 +251,7 @@ export type HandoffRecord = {
 };
 
 export type OnboardingDetail = {
-  onboarding: OnboardingSummary & { approved_scope?: string; target_date?: string; completed_at?: string; project_name?: string; portal_link?: string; connector_mode?: string };
+  onboarding: OnboardingSummary & { approved_scope?: string; target_date?: string; completed_at?: string; project_name?: string; portal_link?: string; connector_mode?: string; invite_status?: string; invite_expires_at?: string | null };
   deal?: { approved_scope?: string; proposal_text?: string; timeline?: Record<string, string | null> };
   plan: Plan | null;
   checklist: ChecklistItem[];
@@ -254,7 +268,8 @@ export type OnboardingDetail = {
 };
 
 export type ClientOnboarding = {
-  onboarding: Omit<OnboardingSummary, 'created_at'>;
+  onboarding: Omit<OnboardingSummary, 'created_at'> & { intake_open?: boolean };
+  brand?: BrandSettings;
   checklist: ChecklistItem[];
   assets: Asset[];
   submissions: Submission[];
@@ -264,6 +279,16 @@ export type ClientOnboarding = {
 const onboardingPath = (id: string) => `/onboardings/${encodeURIComponent(id)}`;
 
 export const api = {
+  brand: () => request<BrandSettings>('/workspace/brand'),
+  saveBrand: (brand: BrandSettings, csrfToken: string) => {
+    const { version, ...fields } = brand;
+    return request<BrandSettings>('/workspace/brand', { method: 'PATCH', csrfToken, body: { ...fields, expected_version: version } });
+  },
+  templates: async () => (await request<{ items: ServiceTemplate[] }>('/templates')).items,
+  saveTemplate: (template: ServiceTemplate, csrfToken: string) => request<ServiceTemplate>(`/templates/${encodeURIComponent(template.service_code)}`, {
+    method: 'PATCH', csrfToken, body: { expected_version: template.version, name: template.name, description: template.description,
+      checklist: template.checklist, folder_blueprint: template.folder_blueprint },
+  }),
   health: () => request<Health>('/health'),
   me: () => request<AuthSession>('/auth/me'),
   login: (email: string, password: string) => request<AuthSession>('/auth/login', { method: 'POST', body: { email, password } }),

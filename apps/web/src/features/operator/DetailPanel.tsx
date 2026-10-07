@@ -1,15 +1,18 @@
-import { useId, useState, type FormEvent } from 'react';
+import { useEffect, useId, useRef, useState, type FormEvent } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AlertTriangle, ArrowLeft, ArrowRight, CalendarDays, Check, CheckCircle2, ClipboardList, Clock3, ExternalLink, FileText, FolderOpen, Inbox, ListChecks, PauseCircle, PlayCircle, RotateCcw, Send, ShieldCheck, Sparkles, Workflow } from 'lucide-react';
 import { api, type AuthSession, type ChecklistItem, type FolderStructure, type OnboardingDetail, type ProjectFolder, type ProvisioningOperation } from '../../lib/api';
+import InvitationCard from './InvitationCard';
+import ThemeControl from '../../components/ThemeControl';
+import { nextStep } from '../../lib/journey';
 import { formatDate, humanize, isAttentionStatus, isCompleteStatus, progress } from '../../lib/format';
 import { Button, EmptyState, ErrorState, LoadingState, ProgressBar, StatusBadge, StepList } from '../../components/ui';
 
-type DetailTab = 'plan' | 'checklist' | 'provisioning' | 'activity' | 'handoff';
+type DetailTab = 'plan' | 'checklist' | 'provisioning' | 'activity' | 'handoff' | 'invitation';
 const STAGES = ['Received', 'Planning', 'Approval', 'Provisioning', 'Client intake', 'Ready', 'Handed off'];
 
 function stageIndex(status: string): number {
-  return ({ received: 0, planning: 1, awaiting_approval: 2, provisioning: 3, waiting_for_client: 4, ready: 5, handed_off: 6 } as Record<string, number>)[status] ?? 0;
+  return ({ received: 0, planning: 1, awaiting_approval: 2, provisioning: 3, waiting_for_client: 4, ready: 5, handed_off: 6 } as Record<string, number>)[status] ?? -1;
 }
 
 function PlanSection({ detail, session, id, onChanged }: { detail: OnboardingDetail; session: AuthSession; id: string; onChanged: () => void }) {
@@ -25,6 +28,7 @@ function PlanSection({ detail, session, id, onChanged }: { detail: OnboardingDet
 
   if (!plan) return <EmptyState icon={<FileText size={22} />} title="Plan not drafted yet">The workflow will add a proposed plan after it processes the approved scope.</EmptyState>;
   return <div className="detail-section-stack">
+    {detail.deal?.approved_scope && <details className="scope-disclosure"><summary>Read the approved scope</summary><p className="readable-detail">{detail.deal.approved_scope}</p>{detail.deal.proposal_text && <><h4>Proposal context</h4><p className="readable-detail">{detail.deal.proposal_text}</p></>}</details>}
     <div className="plan-summary-card"><span className="card-eyebrow"><Sparkles size={15} /> PLAN REVISION {plan.revision}</span><h3>{plan.summary || 'A tailored start for this client'}</h3><div className="plan-status-line"><StatusBadge status={plan.status} /><span>Proposal fingerprint <code>{plan.proposal_hash.slice(0, 12)}…</code></span></div></div>
     {(plan.deliverables?.length ?? 0) > 0 && <div className="detail-card"><h3><CheckCircle2 size={18} /> Agreed deliverables</h3><ul className="detail-list check-list">{plan.deliverables?.map((item, index) => <li key={`${item}-${index}`}><Check size={16} />{item}</li>)}</ul></div>}
     {(plan.missing_inputs?.length ?? 0) > 0 && <div className="detail-card"><h3><Inbox size={18} /> Inputs to request</h3><ul className="detail-list dot-list">{plan.missing_inputs?.map((item, index) => <li key={`${item}-${index}`}>{item}</li>)}</ul></div>}
@@ -231,9 +235,35 @@ function HandoffSection({ detail, session, id, onChanged }: { detail: Onboarding
   </div>;
 }
 
-export default function DetailPanel({ id, session, onBack }: { id: string; session: AuthSession; onBack: () => void }) {
+export default function DetailPanel({ id, session, onBack, overlayOpen = false }: { id: string; session: AuthSession; onBack: () => void; overlayOpen?: boolean }) {
   const queryClient = useQueryClient();
   const detail = useQuery({ queryKey: ['onboarding', id], queryFn: () => api.detail(id) });
+  const panelRef = useRef<HTMLDivElement>(null);
+  const [compact, setCompact] = useState(() => window.matchMedia('(max-width: 1150px)').matches);
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 1150px)');
+    const update = () => setCompact(media.matches);
+    media.addEventListener('change', update);
+    return () => media.removeEventListener('change', update);
+  }, []);
+  useEffect(() => {
+    const panel = panelRef.current;
+    if (!panel) return;
+    const overlay = compact && overlayOpen;
+    if (!overlay) return;
+    const previous = document.activeElement as HTMLElement | null;
+    panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-modal', 'true'); panel.setAttribute('aria-label', 'Client onboarding details'); panel.tabIndex = -1; panel.focus();
+    const handle = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') { event.preventDefault(); onBack(); }
+      if (event.key !== 'Tab') return;
+      const controls = [...panel.querySelectorAll<HTMLElement>('button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),select:not(:disabled),[tabindex="0"]')].filter(node => node.getClientRects().length);
+      const first = controls[0], last = controls[controls.length - 1];
+      if (event.shiftKey && (document.activeElement === first || document.activeElement === panel)) { event.preventDefault(); last?.focus(); }
+      else if (!event.shiftKey && (document.activeElement === last || document.activeElement === panel)) { event.preventDefault(); first?.focus(); }
+    };
+    document.addEventListener('keydown', handle);
+    return () => { document.removeEventListener('keydown', handle); panel.removeAttribute('role'); panel.removeAttribute('aria-modal'); panel.removeAttribute('aria-label'); panel.removeAttribute('tabindex'); if (previous?.isConnected) previous.focus(); };
+  }, [id, onBack, detail.isPending, compact, overlayOpen]);
   const [tab, setTab] = useState<DetailTab>('plan');
   const [pausing, setPausing] = useState(false);
   const [pauseReason, setPauseReason] = useState('');
@@ -243,6 +273,7 @@ export default function DetailPanel({ id, session, onBack }: { id: string; sessi
     { id: 'plan', label: 'Plan', icon: FileText },
     { id: 'checklist', label: 'Checklist', icon: ClipboardList, count: data?.checklist.length },
     { id: 'provisioning', label: 'Resources', icon: FolderOpen, count: data?.operations.length },
+    { id: 'invitation', label: 'Invitation', icon: Send },
     { id: 'activity', label: 'Activity', icon: Clock3 },
     { id: 'handoff', label: 'Handoff', icon: ShieldCheck },
   ];
@@ -252,5 +283,5 @@ export default function DetailPanel({ id, session, onBack }: { id: string; sessi
   if (detail.error || !data) return <div className="detail-panel"><ErrorState message={detail.error?.message ?? 'This onboarding could not be found.'} onRetry={() => void detail.refetch()} /></div>;
   const item = data.onboarding;
   const value = progress(item.required_complete, item.required_total, item.progress_percent);
-  return <div className="detail-panel"><button type="button" className="detail-back" onClick={onBack}><ArrowLeft size={16} /> Back to list</button><div className="detail-header"><div className="detail-header-top"><span className="eyebrow">CLIENT ONBOARDING</span><StatusBadge status={item.substate || item.status} /></div><h2>{item.project_name || item.client_name}</h2><p>{item.client_name} · {item.service_names.join(' · ') || 'Services pending'}{item.owner_name ? ` · Owned by ${item.owner_name}` : ''}</p><div className="detail-meta"><span><CalendarDays size={15} /> Started {formatDate(item.created_at)}</span>{item.target_date && <span>Target {formatDate(item.target_date)}</span>}</div>{session.user.role !== 'viewer' && item.status !== 'handed_off' && <div className="lifecycle-controls">{item.status === 'paused' ? <Button variant="secondary" loading={stateChange.isPending} onClick={() => stateChange.mutate('resume')}><PlayCircle size={16} /> Resume onboarding</Button> : <Button variant="ghost" onClick={() => setPausing(!pausing)}><PauseCircle size={16} /> Pause onboarding</Button>}{pausing && <form onSubmit={(event) => { event.preventDefault(); stateChange.mutate('pause'); }}><label htmlFor="pause-reason">Reason for pause (optional)</label><input id="pause-reason" value={pauseReason} onChange={(event) => setPauseReason(event.target.value)} placeholder="Reason visible in activity timeline" /><Button type="submit" loading={stateChange.isPending}>Confirm pause</Button></form>}{stateChange.error && <ErrorState title="Status not changed" message={stateChange.error.message} />}</div>}</div><div className="detail-progress"><div><span>Overall readiness</span><strong>{item.required_complete ?? 0}/{item.required_total ?? data.checklist.filter((i) => i.required).length} required items</strong></div><span className="detail-progress-number">{value}%</span><ProgressBar value={value} /></div><div className="detail-stage"><StepList steps={STAGES} activeIndex={stageIndex(item.status)} /></div><div className="detail-tabs" role="tablist" aria-label="Onboarding details">{tabs.map(({ id: tabId, label, icon: Icon, count }) => <button type="button" key={tabId} role="tab" aria-selected={tab === tabId} className={tab === tabId ? 'tab-active' : ''} onClick={() => setTab(tabId)}><Icon size={16} />{label}{count !== undefined && <span>{count}</span>}</button>)}</div><div className="detail-content" role="tabpanel">{tab === 'plan' && <PlanSection detail={data} session={session} id={id} onChanged={refresh} />}{tab === 'checklist' && <ChecklistSection items={data.checklist} session={session} id={id} onChanged={refresh} />}{tab === 'provisioning' && <ProvisioningSection detail={data} session={session} id={id} onChanged={refresh} />}{tab === 'activity' && <ActivitySection detail={data} session={session} onChanged={refresh} />}{tab === 'handoff' && <HandoffSection detail={data} session={session} id={id} onChanged={refresh} />}</div></div>;
+  return <div className="detail-panel" ref={panelRef}><div className="detail-return-bar"><button type="button" className="detail-back" onClick={onBack}><ArrowLeft size={16} /> Back to list</button><ThemeControl /></div><div className="detail-header"><div className="detail-header-top"><span className="eyebrow">CLIENT ONBOARDING</span><StatusBadge status={item.substate || item.status} /></div><h2>{item.project_name || item.client_name}</h2><p>{item.client_name} · {item.service_names.join(' · ') || 'Services pending'}{item.owner_name ? ` · Owned by ${item.owner_name}` : ''}</p><div className="detail-meta"><span><CalendarDays size={15} /> Started {formatDate(item.created_at)}</span>{item.target_date && <span>Target {formatDate(item.target_date)}</span>}</div>{session.user.role !== 'viewer' && item.status !== 'handed_off' && <div className="lifecycle-controls">{item.status === 'paused' ? <Button variant="secondary" loading={stateChange.isPending} onClick={() => stateChange.mutate('resume')}><PlayCircle size={16} /> Resume onboarding</Button> : <Button variant="ghost" onClick={() => setPausing(!pausing)}><PauseCircle size={16} /> Pause onboarding</Button>}{pausing && <form onSubmit={(event) => { event.preventDefault(); stateChange.mutate('pause'); }}><label htmlFor="pause-reason">Reason for pause (optional)</label><input id="pause-reason" value={pauseReason} onChange={(event) => setPauseReason(event.target.value)} placeholder="Reason visible in activity timeline" /><Button type="submit" loading={stateChange.isPending}>Confirm pause</Button></form>}{stateChange.error && <ErrorState title="Status not changed" message={stateChange.error.message} />}</div>}</div><div className="detail-next-action"><p className="eyebrow">NEXT ACTION</p><h3>{nextStep(item).title}</h3><p>{nextStep(item).description}</p></div><div className="detail-progress"><div><span>Required inputs received</span><strong>{item.required_complete ?? 0}/{item.required_total ?? data.checklist.filter((i) => i.required).length} required items</strong></div><span className="detail-progress-number">{value}%</span><ProgressBar value={value} /></div><div className="detail-stage"><StepList steps={STAGES} activeIndex={stageIndex(item.status)} /></div><div className="detail-tabs" role="tablist" aria-label="Onboarding details">{tabs.map(({ id: tabId, label, icon: Icon, count }) => <button type="button" key={tabId} role="tab" id={`tab-${id}-${tabId}`} aria-controls={`panel-${id}`} tabIndex={tab === tabId ? 0 : -1} onKeyDown={event => { const index = tabs.findIndex(t => t.id === tabId); const offset = event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0; if (offset || event.key === "Home" || event.key === "End") { event.preventDefault(); const next = event.key === "Home" ? tabs[0]! : event.key === "End" ? tabs[tabs.length - 1]! : tabs[(index + offset + tabs.length) % tabs.length]!; setTab(next.id); document.getElementById(`tab-${id}-${next.id}`)?.focus(); } }} aria-selected={tab === tabId} className={tab === tabId ? 'tab-active' : ''} onClick={() => setTab(tabId)}><Icon size={16} />{label}{count !== undefined && <span>{count}</span>}</button>)}</div><div className="detail-content" role="tabpanel" id={`panel-${id}`} aria-labelledby={`tab-${id}-${tab}`} tabIndex={0}>{tab === "invitation" && <InvitationCard detail={data} canView={session.user.role !== "viewer"} />}{tab === 'plan' && <PlanSection detail={data} session={session} id={id} onChanged={refresh} />}{tab === 'checklist' && <ChecklistSection items={data.checklist} session={session} id={id} onChanged={refresh} />}{tab === 'provisioning' && <ProvisioningSection detail={data} session={session} id={id} onChanged={refresh} />}{tab === 'activity' && <ActivitySection detail={data} session={session} onChanged={refresh} />}{tab === 'handoff' && <HandoffSection detail={data} session={session} id={id} onChanged={refresh} />}</div></div>;
 }

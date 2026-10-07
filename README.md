@@ -2,7 +2,7 @@
 
 > A controlled handoff from won deal to client onboarding.
 
-![ClientLaunch product interface](screenshots/recovered-overview-1440.png)
+![ClientLaunch product interface](screenshots/theme-2026-10-07/workbench-dark-desktop.png)
 
 [Getting started](#getting-started) · [Architecture](docs/ARCHITECTURE.md) · [Evaluation](docs/EVALUATION.md) · [Security](docs/SECURITY.md)
 
@@ -34,7 +34,17 @@ Local workflow, API and browser checks are documented; connected Drive, Trello a
 
 Run the local demonstration from the repository root using the project-specific instructions below. External service credentials are needed only for connected integrations.
 
-### Quick start
+### Local interaction preview (without Docker)
+
+```powershell
+node scripts/preview_fixture.mjs
+```
+
+Open <http://127.0.0.1:4318>. Use `fixture@clientlaunch.example.com` / `preview`, or enter `fixture-willow` in the client portal. The fixture API uses loopback port 8318. This preview keeps fictional edits in memory, records file metadata only, sends no email and runs no n8n or live provider. Restarting resets fixture changes.
+
+The current upgrade adds workspace branding, versioned template editing, clearer client actions, invitation status, retained drafts and submission receipts. The compact operations workbench supports persisted Light, Dark and System appearances, readable stage details and responsive client intake. See [design and theme guide](docs/DESIGN_AND_THEMES.md). See [client customization guide](docs/CLIENT_CUSTOMIZATION.md) for real backend behavior, test evidence and runtime limits.
+
+### Docker workflow quick start
 
 Prerequisites: Docker Desktop or Docker Engine with Compose, and Node.js 24 or newer. Start Docker first. From this folder, run one command:
 
@@ -50,7 +60,7 @@ To replay the synthetic website handoff through the signed n8n webhook after lau
 
 The one-command local Docker launch completed on 2026-09-28: five services started, PostgreSQL migration `0003` and the full seed loaded. After a brief Docker Desktop interruption, a ten-workflow, **94-node** pack was imported and published with five webhook routes; API and n8n health returned HTTP 200. Signed intake through n8n returned 200; an identical replay returned 200 with the same onboarding, while a conflicting replay returned 409. The user-authorized Willow Harbor Studio DEMO plan was approved once. A one-shot simulated board failure left its root and seven child folders intact. Operator recovery retried the board operation; the running n8n workflow then created one board, six cards and one welcome outbox entry. The onboarding reached `waiting_for_client` with nine successful provisioning operations and no failed operation. A scoped client submission then completed five of six checklist items and synced their cards; the logo asset remains open. The latest **96-node source pack** adds a controlled reminder webhook and card reconciliation; it passes static validation but has **not** been reimported because Docker overlayfs returned an I/O error. New handoff detail, stale-dispatch recovery and connected-startup checks have local source/test evidence only. Captures at 1440, 1024 and 390 pixels are saved under `screenshots/`. Logo upload, reminder and handoff acceptance, plus connected-provider smoke tests, are tracked in [RUNTIME_ACCEPTANCE.md](docs/RUNTIME_ACCEPTANCE.md). Both PostgreSQL databases previously passed an isolated dump/restore count check before migration `0003` and the tenth workflow import.
 
-The current API suite passes **17/17** tests. Recent source changes hide invite links and token-bearing welcome bodies from viewer accounts, preserve an in-flight card write when a client changes an answer, require a card claim to match its expected status and idempotency key, and require a confirmed To Do list ID when a connected board is reconciled. The operator UI collects that ID and passes typecheck. These changes have local test evidence; the latest Docker runtime journey is still pending.
+The current API/customization suites pass **22 tests** (17 business/security and five customization tests); the frontend passes **15 tests**. Recent source changes hide invite links and token-bearing welcome bodies from viewer accounts, preserve an in-flight card write when a client changes an answer, require a card claim to match its expected status and idempotency key, and require a confirmed To Do list ID when a connected board is reconciled. The operator UI collects that ID and passes typecheck. These changes have local test evidence; the latest Docker runtime journey is still pending.
 
 ## Local checks without Docker
 
@@ -73,4 +83,3 @@ pnpm test
 Start with [PRODUCT.md](docs/PRODUCT.md), [ARCHITECTURE.md](docs/ARCHITECTURE.md), [OPERATIONS.md](docs/OPERATIONS.md), and [API.md](docs/API.md). [EVALUATION.md](docs/EVALUATION.md) explains measured synthetic results and leakage limits. [COMMERCIALIZATION.md](docs/COMMERCIALIZATION.md) covers installation scope and connector ownership. [HANDOVER.md](docs/HANDOVER.md) lists verified, pending, and blocked items.
 
 This is an independent portfolio project and a commercial pilot starting point, not a production-ready or customer-validated deployment.
-

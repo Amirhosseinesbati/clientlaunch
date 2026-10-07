@@ -3,6 +3,7 @@ import { ArrowRight, CheckCircle2, Compass, LockKeyhole, ShieldCheck, Sparkles }
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api, type AuthSession, type Health } from '../../lib/api';
 import { Button, ErrorState } from '../../components/ui';
+import ThemeControl from '../../components/ThemeControl';
 
 export default function LoginScreen({ health, onClientPortal, connectionError, onRetryConnection }: { health?: Health; onClientPortal: () => void; connectionError?: string; onRetryConnection?: () => void }) {
   const queryClient = useQueryClient();
@@ -20,6 +21,7 @@ export default function LoginScreen({ health, onClientPortal, connectionError, o
 
   return (
     <div className="auth-layout">
+      <div className="auth-appearance"><ThemeControl /></div>
       <div className="auth-story">
         <div className="auth-brand"><span className="brand-icon"><Compass size={23} strokeWidth={2.2} /></span><span>clientlaunch<span className="brand-period">.</span></span></div>
         <div className="auth-story-body">

@@ -21,6 +21,8 @@ jobs:
         run: python -m unittest discover -s tests/ai -v
       - name: Test business API
         run: python -m unittest discover -s tests/api -v
+      - name: Test workspace customization
+        run: python -m unittest discover -s tests/customization -v
       - name: Smoke test migration and fast synthetic seed
         env:
           DATABASE_URL: sqlite:///./ci-clientlaunch.db

@@ -7,9 +7,9 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   loading?: boolean;
 };
 
-export function Button({ variant = 'primary', loading = false, children, className = '', disabled, ...props }: ButtonProps) {
+export function Button({ variant = 'primary', loading = false, type = 'button', children, className = '', disabled, ...props }: ButtonProps) {
   return (
-    <button className={`btn btn-${variant} ${className}`} disabled={disabled || loading} {...props}>
+    <button className={`btn btn-${variant} ${className}`} type={type} disabled={disabled || loading} aria-busy={loading || undefined} {...props}>
       {loading ? <LoaderCircle className="size-4 animate-spin" aria-hidden="true" /> : null}
       {children}
     </button>
@@ -72,7 +72,7 @@ export function LoadingState({ label = 'Loading workspace…' }: { label?: strin
 export function StepList({ steps, activeIndex }: { steps: string[]; activeIndex: number }) {
   return (
     <ol className="step-list" aria-label="Onboarding stages">
-      {steps.map((step, index) => <li key={step} className={index < activeIndex ? 'step-done' : index === activeIndex ? 'step-active' : ''}>
+      {steps.map((step, index) => <li key={step} aria-current={index === activeIndex ? 'step' : undefined} className={index < activeIndex ? 'step-done' : index === activeIndex ? 'step-active' : ''}>
         <span className="step-marker">{index < activeIndex ? <Check size={13} strokeWidth={3} /> : index + 1}</span>
         <span>{step}</span>
         {index === activeIndex && <ArrowRight size={14} className="step-arrow" />}

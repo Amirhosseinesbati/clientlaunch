@@ -13,3 +13,13 @@ screenshots/private/
 
 # Local product brief; excluded from the public portfolio repository.
 /08-n8n-clientlaunch.md
+
+# Private local recovery and publication metadata
+.upgrade-baseline/
+.env.*
+!.env.example
+*.tsbuildinfo
+**/library-files.json
+**/library-status.json
+**/library-manifest.json
+**/upload-manifest.json

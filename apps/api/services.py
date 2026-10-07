@@ -28,9 +28,21 @@ from .models import (
     TaskCard,
     TimelineEvent,
     WorkflowDispatch,
+    Workspace,
+    WorkspaceBrand,
     utcnow,
 )
 from .security import aware, portal_token_for
+
+
+def brand_settings(db: Session, workspace_id: str) -> dict:
+    brand = db.get(WorkspaceBrand, workspace_id)
+    if brand:
+        return {key: getattr(brand, key) for key in ("agency_name", "accent", "welcome_heading", "welcome_message", "support_email", "version")}
+    workspace = db.get(Workspace, workspace_id)
+    return {"agency_name": workspace.name, "accent": "#183e32", "welcome_heading": "A great project starts with a clear first step.",
+            "welcome_message": "Share a few details with your project team. You can come back and finish at your own pace.",
+            "support_email": None, "version": 0}
 
 
 def canonical_hash(value: dict) -> str:
@@ -182,6 +194,8 @@ def detail(db: Session, onboarding: Onboarding) -> dict:
         "reference_date": os.getenv("DEMO_REFERENCE_DATE", "2026-09-28"),
     })
     invite = db.scalar(select(PortalInvite).where(PortalInvite.onboarding_id == onboarding.id, PortalInvite.revoked_at.is_(None)).order_by(PortalInvite.expires_at.desc()))
+    result["invite_status"] = "active" if invite and aware(invite.expires_at) > utcnow() else "expired" if invite else "not_created"
+    result["invite_expires_at"] = iso(invite.expires_at) if invite else None
     if invite and plan and aware(invite.expires_at) > utcnow():
         base_url = os.getenv("WEB_BASE_URL", "http://localhost:5173").rstrip("/")
         result["portal_link"] = f"{base_url}/client?token={portal_token_for(onboarding.id, plan.id)}"
@@ -221,11 +235,24 @@ def detail(db: Session, onboarding: Onboarding) -> dict:
 def client_detail(db: Session, onboarding: Onboarding) -> dict:
     source = detail(db, onboarding)
     checklist = [item for item in source["checklist"] if item["client_visible"]]
+    visible_ids = {item["id"] for item in checklist}
+    public_submissions = []
+    for submission in source["submissions"]:
+        answers = [answer for answer in submission["answers"] if answer.get("checklist_item_id") in visible_ids]
+        if answers:
+            public_submissions.append({**submission, "answers": answers})
+    required = [item for item in checklist if item["required"]]
+    completed = sum(item["status"] == "completed" for item in required)
+    public_onboarding = {key: source["onboarding"][key] for key in ("id", "client_name", "service_names", "status")}
+    public_onboarding.update({"required_complete": completed, "required_total": len(required),
+                              "progress_percent": round(100 * completed / len(required)) if required else 0,
+                              "intake_open": onboarding.status in {"waiting_for_client", "ready"} and not onboarding.substate})
     return {
-        "onboarding": {key: source["onboarding"][key] for key in ("id", "client_name", "service_names", "status", "progress_percent", "required_complete", "required_total")},
+        "onboarding": public_onboarding,
+        "brand": brand_settings(db, onboarding.workspace_id),
         "checklist": checklist,
         "assets": source["assets"],
-        "submissions": source["submissions"],
+        "submissions": public_submissions,
         "next_actions": [item for item in checklist if item["status"] != "completed"],
     }
 

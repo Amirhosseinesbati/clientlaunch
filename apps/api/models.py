@@ -25,6 +25,17 @@ class Workspace(Base):
     is_demo: Mapped[bool] = mapped_column(Boolean, default=False)
 
 
+class WorkspaceBrand(Base):
+    __tablename__ = "workspace_brands"
+    workspace_id: Mapped[str] = mapped_column(ForeignKey("workspaces.id"), primary_key=True)
+    agency_name: Mapped[str] = mapped_column(String(160))
+    accent: Mapped[str] = mapped_column(String(7), default="#183e32")
+    welcome_heading: Mapped[str] = mapped_column(String(160))
+    welcome_message: Mapped[str] = mapped_column(Text)
+    support_email: Mapped[str | None] = mapped_column(String(254))
+    version: Mapped[int] = mapped_column(Integer, default=1)
+
+
 class User(Base):
     __tablename__ = "users"
     __table_args__ = (UniqueConstraint("workspace_id", "email"),)
